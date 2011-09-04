@@ -37,7 +37,7 @@ Parser.prototype = {
   //              | <Table>)*
   // ------------------------------------------------------------
 
-  parseElement: function () {
+  parseElement: function (belowBlank) {
     switch (this.lexer.peekNextToken().type) {
     case Lexer.tokens.header:
       return this.parseHeader();
@@ -46,11 +46,11 @@ Parser.prototype = {
     case Lexer.tokens.orderedListElement:
     case Lexer.tokens.unorderedListElement:
       return this.parseList();
-    case Lexer.tokens.paragraph:
-      return this.parseParagraph();
+    case Lexer.tokens.line:
+      return belowBlank ? this.parseParagraph() : this.parseText();
     case Lexer.tokens.blank:
       this.lexer.getNextToken();
-      return this.lexer.hasNext() ? this.parseElement() : null; // loop
+      return this.lexer.hasNext() ? this.parseElement(true) : null; // loop
     }
 
     throw new Error("SyntaxError: Unknown Line");
@@ -140,17 +140,17 @@ Parser.prototype = {
   },
 
   // ------------------------------------------------------------
-  // <Paragraph>
+  // <Paragraph> ::= <Blank> <Line>*
   // ------------------------------------------------------------
 
   parseParagraph: function () {
     var paragraphFisrtToken = this.lexer.peekNextToken();
-    assert.ok(paragraphFisrtToken.type === Lexer.tokens.paragraph);
+    assert.ok(paragraphFisrtToken.type === Lexer.tokens.line);
     var paragraph = Node.createParagraph([]);
 
     while (this.lexer.hasNext()) {
       var nextToken = this.lexer.peekNextToken();
-      if (nextToken.type !== Lexer.tokens.paragraph
+      if (nextToken.type !== Lexer.tokens.line
           || nextToken.indentation < paragraphFisrtToken.indentation)
         break;
       this.lexer.getNextToken();
@@ -158,6 +158,12 @@ Parser.prototype = {
     }
 
     return paragraph;
+  },
+
+  parseText: function () {
+    var lineToken = this.lexer.getNextToken();
+    assert.ok(lineToken.type === Lexer.tokens.line);
+    return this.createTextNode(lineToken.content);
   },
 
   // ------------------------------------------------------------
