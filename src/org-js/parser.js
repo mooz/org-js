@@ -153,8 +153,8 @@ Parser.prototype = {
         break;
 
       var notBlankNextToken = this.lexer.peekNextToken();
-      if (blankToken)
-        this.lexer.pushToken(blankToken); // recover blank token
+      if (blankToken && !notBlankNextToken.isListElement())
+        this.lexer.pushToken(blankToken); // Recover blank token only when next line is not listElement.
       if (notBlankNextToken.indentation === 0)
         break;                  // end of the list
 
