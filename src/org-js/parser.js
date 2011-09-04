@@ -20,6 +20,13 @@ Parser.prototype = {
     return this.document;
   },
 
+  skipBlank: function () {
+    var blankToken = null;
+    while (this.lexer.peekNextToken().type === Lexer.tokens.blank)
+      blankToken = this.lexer.getNextToken();
+    return blankToken;
+  },
+
   // ------------------------------------------------------------
   // <Document> ::= <Element>*
   // ------------------------------------------------------------
@@ -37,23 +44,35 @@ Parser.prototype = {
   //              | <Table>)*
   // ------------------------------------------------------------
 
-  parseElement: function (belowBlank) {
+  parseElement: function () {
+    var token = null;
+
     switch (this.lexer.peekNextToken().type) {
     case Lexer.tokens.header:
-      return this.parseHeader();
+      token = this.parseHeader();
+      break;
     case Lexer.tokens.preformatted:
-      return this.parsePreformatted();
+      token = this.parsePreformatted();
+      break;
     case Lexer.tokens.orderedListElement:
     case Lexer.tokens.unorderedListElement:
-      return this.parseList();
+      token = this.parseList();
+      break;
     case Lexer.tokens.line:
-      return belowBlank ? this.parseParagraph() : this.parseText();
+      token = this.parseText();
+      break;
     case Lexer.tokens.blank:
-      this.lexer.getNextToken();
-      return this.lexer.hasNext() ? this.parseElement(true) : null; // loop
+      this.skipBlank();
+      if (this.lexer.hasNext()) {
+        if (this.lexer.peekNextToken().type === Lexer.tokens.line)
+          token = this.parseParagraph();
+        else
+          token = this.parseElement();
+      }
+      break;
     }
 
-    throw new Error("SyntaxError: Unknown Line");
+    return token;
   },
 
   // ------------------------------------------------------------
@@ -129,11 +148,19 @@ Parser.prototype = {
     ]);
 
     while (this.lexer.hasNext()) {
-      var nextToken = this.lexer.peekNextToken();
-      if (nextToken.indentation <= rootIndentation && nextToken.type !== Lexer.tokens.blank)
+      var blankToken = this.skipBlank();
+      if (!this.lexer.hasNext())
         break;
-      var element = this.parseElement();
-      if (element) listElement.children.push(element); // recursive
+
+      var notBlankNextToken = this.lexer.peekNextToken();
+      if (blankToken)
+        this.lexer.pushToken(blankToken); // recover blank token
+      if (notBlankNextToken.indentation === 0)
+        break;                  // end of the list
+
+      var element = this.parseElement(); // recursive
+      if (element)
+        listElement.children.push(element);
     }
 
     return listElement;

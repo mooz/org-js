@@ -41,6 +41,7 @@ Token.prototype = {
 
 function Lexer(stream) {
   this.stream = stream;
+  this.tokenStack = [];
 }
 
 Lexer.prototype = {
@@ -59,11 +60,11 @@ Lexer.prototype = {
       token.content     = RegExp.$2;
     } else if (Syntax.isUnorderedListElement(line)) {
       token.type        = Lexer.tokens.unorderedListElement;
-      token.indentation = RegExp.$1.length + 1;
+      token.indentation = RegExp.$1.length;
       token.content     = RegExp.$2;
     } else if (Syntax.isOrderedListElement(line)) {
       token.type        = Lexer.tokens.orderedListElement;
-      token.indentation = RegExp.$1.length + 1;
+      token.indentation = RegExp.$1.length;
       token.content     = RegExp.$3;
       // specific
       token.number      = RegExp.$2;
@@ -82,22 +83,28 @@ Lexer.prototype = {
     return token;
   },
 
+  pushToken: function (token) {
+    this.tokenStack.push(token);
+  },
+
+  peekStackedToken: function () {
+    return this.tokenStack.length > 0 ?
+      this.tokenStack[this.tokenStack.length - 1] : null;
+  },
+
+  getStackedToken: function () {
+    return this.tokenStack.length > 0 ?
+      this.tokenStack.pop() : null;
+  },
+
   peekNextToken: function () {
-    var token = this.tokenize(this.stream.peekNextLine());
-    this._tokenCache = token;
-    return token;
+    return this.peekStackedToken() ||
+      this.tokenize(this.stream.peekNextLine());
   },
 
   getNextToken: function () {
-    var token;
-    if (this._tokenCache) {
-      token = this._tokenCache;
-      this._tokenCache = null;
-      this.stream.getNextLine();
-    } else {
-      token = this.tokenize(this.stream.getNextLine());
-    }
-    return token;
+    return this.getStackedToken() ||
+      this.tokenize(this.stream.getNextLine());
   },
 
   hasNext: function () {
