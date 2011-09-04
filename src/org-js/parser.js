@@ -25,11 +25,8 @@ Parser.prototype = {
   // ------------------------------------------------------------
 
   parseDocument: function () {
-    var element;
-    while (this.lexer.hasNext()) {
-      element = this.parseElement(0);
-      if (element) { this.document.push(element); }
-    }
+    while (this.lexer.hasNext())
+      this.document.push(this.parseElement());
   },
 
   // ------------------------------------------------------------
