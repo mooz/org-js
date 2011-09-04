@@ -25,8 +25,10 @@ Parser.prototype = {
   // ------------------------------------------------------------
 
   parseDocument: function () {
-    while (this.lexer.hasNext())
-      this.document.push(this.parseElement());
+    while (this.lexer.hasNext()) {
+      var element = this.parseElement();
+      if (element) this.document.push(element);
+    }
   },
 
   // ------------------------------------------------------------
@@ -48,7 +50,7 @@ Parser.prototype = {
       return this.parseParagraph();
     case Lexer.tokens.blank:
       this.lexer.getNextToken();
-      return this.parseElement(); // loop
+      return this.lexer.hasNext() ? this.parseElement() : null; // loop
     }
 
     throw new Error("SyntaxError: Unknown Line");
@@ -130,7 +132,8 @@ Parser.prototype = {
       var nextToken = this.lexer.peekNextToken();
       if (nextToken.indentation <= rootIndentation && nextToken.type !== Lexer.tokens.blank)
         break;
-      listElement.children.push(this.parseElement()); // recursive
+      var element = this.parseElement();
+      if (element) listElement.children.push(element); // recursive
     }
 
     return listElement;
