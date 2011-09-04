@@ -128,7 +128,7 @@ Parser.prototype = {
 
     while (this.lexer.hasNext()) {
       var nextToken = this.lexer.peekNextToken();
-      if (nextToken.indentation <= rootIndentation && nextToken.type !== "blank")
+      if (nextToken.indentation <= rootIndentation && nextToken.type !== Lexer.tokens.blank)
         break;
       listElement.children.push(this.parseElement()); // recursive
     }
