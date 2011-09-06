@@ -155,7 +155,7 @@ Parser.prototype = {
       var notBlankNextToken = this.lexer.peekNextToken();
       if (blankToken && !notBlankNextToken.isListElement())
         this.lexer.pushToken(blankToken); // Recover blank token only when next line is not listElement.
-      if (notBlankNextToken.indentation === 0)
+      if (notBlankNextToken.indentation <= rootIndentation)
         break;                  // end of the list
 
       var element = this.parseElement(); // recursive
