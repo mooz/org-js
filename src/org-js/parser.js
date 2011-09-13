@@ -105,14 +105,18 @@ Parser.prototype = {
     assert.ok(preformattedFirstToken.type === Lexer.tokens.preformatted);
     var preformatted = Node.createPreformatted([]);
 
+    var textContents = [];
+
     while (this.lexer.hasNext()) {
       var token = this.lexer.peekNextToken();
       if (token.type !== Lexer.tokens.preformatted ||
           token.indentation < preformattedFirstToken.indentation)
         break;
       this.lexer.getNextToken();
-      preformatted.children.push(this.createTextNode(token.content));
+      textContents.push(token.content);
     }
+
+    preformatted.children.push(this.createTextNode(textContents.join("\n")));
 
     return preformatted;
   },
@@ -175,14 +179,18 @@ Parser.prototype = {
     assert.ok(paragraphFisrtToken.type === Lexer.tokens.line);
     var paragraph = Node.createParagraph([]);
 
+    var textContents = [];
+
     while (this.lexer.hasNext()) {
       var nextToken = this.lexer.peekNextToken();
       if (nextToken.type !== Lexer.tokens.line
           || nextToken.indentation < paragraphFisrtToken.indentation)
         break;
       this.lexer.getNextToken();
-      paragraph.children.push(this.createTextNode(nextToken.content));
+      textContents.push(nextToken.content);
     }
+
+    paragraph.children.push(this.createTextNode(textContents.join("\n")));
 
     return paragraph;
   },
