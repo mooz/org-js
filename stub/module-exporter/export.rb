@@ -24,9 +24,8 @@ module JSExporter
 
     def visit_node_children(graph, node)
       is_done_node = @statuses[node] == :done
-      @statuses[node] = :visiting
-
       children_node = graph[node] or return
+      @statuses[node] = :visiting
       children_node.each { |child_node|
         if @statuses[child_node] == :visiting
           raise "Cyclic reference found for " + child_node
