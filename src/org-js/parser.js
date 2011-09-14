@@ -4,6 +4,7 @@ var Node   = require("./node.js").Node;
 var assert = require("assert");
 
 function Parser() {
+  this.inlineParser = new InlineParser();
 }
 
 Parser.prototype = {
@@ -206,9 +207,98 @@ Parser.prototype = {
   // ------------------------------------------------------------
 
   createTextNode: function (text) {
-    return Node.createText(null, { value: text });
+    return Node.createInlineContainer(this.inlineParser.parse(text));
   }
 };
 
-if (typeof exports !== "undefined")
+// ------------------------------------------------------------
+// Parser for Inline Elements
+// ------------------------------------------------------------
+
+function InlineParser() {
+  this.preEmphasis     = " \t\\('\"";
+  this.postEmphasis    = "- \t.,:!?;'\"\\)";
+  this.borderForbidden = " \t\r\n,\"'";
+  this.bodyRegexp      = ".*?";
+  this.markers         = "*/_=~+";
+
+  this.imageExtensions = [
+    "bmp", "png", "jpeg", "jpg", "gif", "tiff",
+    "tif", "xbm", "xpm", "pbm", "pgm", "ppm"
+  ].join("|");
+
+  this.linkPattern = /\[\[([^\]]*)\](?:\[([^\]]*)\])?\]/; // \1 => link, \2 => text
+}
+
+InlineParser.prototype = {
+  parse: function (text) {
+    // We need to instanciate regexp every time
+    var emphasisPattern = this.buildEmphasisPattern();
+    var result = [];
+    var match;
+    var previousLast = 0;
+
+    while ((match = emphasisPattern.exec(text))) {
+      var whole  = match[0];
+      var pre    = match[1];
+      var marker = match[2];
+      var body   = match[3];
+      var post   = match[4];
+
+      var matchBegin = emphasisPattern.lastIndex - whole.length;
+      var beforeContent = text.substring(previousLast, matchBegin + pre.length);
+      result.push(Node.createText(null, { value: beforeContent}));
+
+      var bodyNode = [Node.createText(null, { value: body })];
+      var bodyContainer;
+
+      switch (marker) {
+      case "*":
+        bodyContainer = Node.createBold(bodyNode);
+        break;
+      case "/":
+        bodyContainer = Node.createItalic(bodyNode);
+        break;
+      case "_":
+        bodyContainer = Node.createUnderline(bodyNode);
+        break;
+      case "=":
+      case "~":
+        bodyContainer = Node.createCode(bodyNode);
+        break;
+      case "+":
+        bodyContainer = Node.createDashed(bodyNode);
+        break;
+      }
+
+      result.push(bodyContainer);
+
+      previousLast = emphasisPattern.lastIndex - post.length;
+    }
+
+    if (emphasisPattern.lastIndex !== text.length - 1)
+      result.push(Node.createText(null, { value: text.substring(previousLast) }));
+
+    return result;
+  },
+
+  buildEmphasisPattern: function () {
+    return new RegExp(
+      "([" + this.preEmphasis + "]|^)" +                     // \1 => pre
+        "([" + this.markers + "])" +                         // \2 => marker
+        "([^" + this.borderForbidden + "]|" +                // \3 => body
+        "[^" + this.borderForbidden + "]" +
+        this.bodyRegexp +
+        "[^" + this.borderForbidden + "])" +
+        "\\2" +
+        "([" + this.postEmphasis +"]|$)",                    // \4 => post
+        // flags
+        "mg"
+    );
+  }
+};
+
+if (typeof exports !== "undefined") {
   exports.Parser = Parser;
+  exports.InlineParser = InlineParser;
+}

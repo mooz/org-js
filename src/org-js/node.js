@@ -34,5 +34,15 @@ Node.define("paragraph");
 Node.define("preformatted");
 // TODO: Table, Image
 
+// Inline
+Node.define("inlineContainer");
+
+Node.define("bold");
+Node.define("italic");
+Node.define("underline");
+Node.define("code");
+Node.define("verbatim");
+Node.define("dashed");
+
 if (typeof exports !== "undefined")
   exports.Node = Node;

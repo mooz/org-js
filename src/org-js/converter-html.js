@@ -27,6 +27,27 @@ var HtmlTextConverter = {
     case Node.types.preformatted:
       text = "<pre>" + childText + "</pre>\n";
       break;
+      // ============================================================ //
+      // Inline
+      // ============================================================ //
+    case Node.types.inlineContainer:
+      text = childText;
+      break;
+    case Node.types.bold:
+      text = "<b>" + childText + "</b>";
+      break;
+    case Node.types.italic:
+      text = "<i>" + childText + "</i>";
+      break;
+    case Node.types.underline:
+      text = "<span style='text-decoration:underline;'>" + childText + "</span>";
+      break;
+    case Node.types.code:
+      text = "<code>" + childText + "</code>";
+      break;
+    case Node.types.dashed:
+      text = "<del>" + childText + "</del>";
+      break;
     }
 
     return text;
