@@ -45,34 +45,34 @@ Parser.prototype = {
   // ------------------------------------------------------------
 
   parseElement: function () {
-    var token = null;
+    var element = null;
 
     switch (this.lexer.peekNextToken().type) {
     case Lexer.tokens.header:
-      token = this.parseHeader();
+      element = this.parseHeader();
       break;
     case Lexer.tokens.preformatted:
-      token = this.parsePreformatted();
+      element = this.parsePreformatted();
       break;
     case Lexer.tokens.orderedListElement:
     case Lexer.tokens.unorderedListElement:
-      token = this.parseList();
+      element = this.parseList();
       break;
     case Lexer.tokens.line:
-      token = this.parseText();
+      element = this.parseText();
       break;
     case Lexer.tokens.blank:
       this.skipBlank();
       if (this.lexer.hasNext()) {
         if (this.lexer.peekNextToken().type === Lexer.tokens.line)
-          token = this.parseParagraph();
+          element = this.parseParagraph();
         else
-          token = this.parseElement();
+          element = this.parseElement();
       }
       break;
     }
 
-    return token;
+    return element;
   },
 
   // ------------------------------------------------------------
