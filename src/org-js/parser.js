@@ -276,7 +276,8 @@ InlineParser.prototype = {
       previousLast = emphasisPattern.lastIndex - post.length;
     }
 
-    if (emphasisPattern.lastIndex !== text.length - 1)
+    if (emphasisPattern.lastIndex === 0 ||
+        emphasisPattern.lastIndex !== text.length - 1)
       result.push(Node.createText(null, { value: text.substring(previousLast) }));
 
     return result;
