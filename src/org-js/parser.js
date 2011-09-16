@@ -213,13 +213,15 @@ Parser.prototype = {
 
 // ------------------------------------------------------------
 // Parser for Inline Elements
+//
+// @refs org-emphasis-regexp-components
 // ------------------------------------------------------------
 
 function InlineParser() {
   this.preEmphasis     = " \t\\('\"";
   this.postEmphasis    = "- \t.,:!?;'\"\\)";
   this.borderForbidden = " \t\r\n,\"'";
-  this.bodyRegexp      = ".*?";
+  this.bodyRegexp      = "(?:[\n\r]|.)*?"; // I know [\s\S]*, but that's greedy matching.
   this.markers         = "*/_=~+";
 
   this.imageExtensions = [
@@ -294,7 +296,7 @@ InlineParser.prototype = {
         "\\2" +
         "([" + this.postEmphasis +"]|$)",                    // \4 => post
         // flags
-        "mg"
+        "g"
     );
   }
 };
