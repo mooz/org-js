@@ -229,13 +229,15 @@ function InlineParser() {
     "tif", "xbm", "xpm", "pbm", "pgm", "ppm"
   ].join("|");
 
+  this.emphasisPattern = this.buildEmphasisPattern();
   this.linkPattern = /\[\[([^\]]*)\](?:\[([^\]]*)\])?\]/; // \1 => link, \2 => text
 }
 
 InlineParser.prototype = {
   parse: function (text) {
-    // We need to instanciate regexp every time
-    var emphasisPattern = this.buildEmphasisPattern();
+    var emphasisPattern = this.emphasisPattern;
+    emphasisPattern.lastIndex = 0;
+
     var result = [];
     var match;
     var previousLast = 0;
