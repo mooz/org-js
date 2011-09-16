@@ -221,7 +221,7 @@ function InlineParser() {
   this.preEmphasis     = " \t\\('\"";
   this.postEmphasis    = "- \t.,:!?;'\"\\)";
   this.borderForbidden = " \t\r\n,\"'";
-  this.bodyRegexp      = "(?:[\n\r]|.)*?"; // I know [\s\S]*, but that's greedy matching.
+  this.bodyRegexp      = "[\\s\\S]*?";
   this.markers         = "*/_=~+";
 
   this.imageExtensions = [
