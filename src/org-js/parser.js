@@ -247,7 +247,7 @@ InlineParser.prototype = {
 
       var matchBegin = emphasisPattern.lastIndex - whole.length;
       var beforeContent = text.substring(previousLast, matchBegin + pre.length);
-      result.push(Node.createText(null, { value: beforeContent}));
+      result.push(Node.createText(null, { value: beforeContent }));
 
       var bodyNode = [Node.createText(null, { value: body })];
       var bodyContainer;
