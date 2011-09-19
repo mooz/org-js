@@ -62,6 +62,9 @@ Parser.prototype = {
     case Lexer.tokens.line:
       element = this.parseText();
       break;
+    case Lexer.tokens.tableRow:
+      element = this.parseTable();
+      break;
     case Lexer.tokens.blank:
       this.skipBlank();
       if (this.lexer.hasNext()) {
@@ -169,6 +172,39 @@ Parser.prototype = {
     }
 
     return listElement;
+  },
+
+  // ------------------------------------------------------------
+  // <Table> ::= <TableRow>+
+  // ------------------------------------------------------------
+
+  parseTable: function () {
+    var table = Node.createTable([]);
+
+    while (this.lexer.hasNext() &&
+           this.lexer.peekNextToken().type === Lexer.tokens.tableRow) {
+      table.children.push(this.parseTableRow());
+    }
+
+    return table;
+  },
+
+  // ------------------------------------------------------------
+  // <TableRow> ::= <TableCell>+
+  // ------------------------------------------------------------
+
+  parseTableRow: function () {
+    var tableRowToken = this.lexer.getNextToken();
+
+    // XXX: Low performance
+    return Node.createTableRow(
+      tableRowToken.content
+        .split("|")
+        .map(function (text) {
+          var inlineContainer = this.createTextNode(text);
+          return Node.createTableCell([inlineContainer]);
+        }, this)
+    );
   },
 
   // ------------------------------------------------------------

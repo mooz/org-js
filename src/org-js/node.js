@@ -32,6 +32,9 @@ Node.define("unorderedList");
 Node.define("listElement");
 Node.define("paragraph");
 Node.define("preformatted");
+Node.define("table");
+Node.define("tableRow");
+Node.define("tableCell");
 // TODO: Table, Image
 
 // Inline

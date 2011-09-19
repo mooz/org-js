@@ -27,6 +27,16 @@ var HtmlTextConverter = {
     case Node.types.preformatted:
       text = "<pre>" + childText + "</pre>\n";
       break;
+    case Node.types.table:
+      // TODO: Consider <col> or <colgroup>
+      text = "<table><tbody>" + childText + "</tbody></table>\n";
+      break;
+    case Node.types.tableRow:
+      text = "<tr>" + childText + "</tr>\n";
+      break;
+    case Node.types.tableCell:
+      text = "<td>" + childText + "</td>\n";
+      break;
       // ============================================================ //
       // Inline
       // ============================================================ //

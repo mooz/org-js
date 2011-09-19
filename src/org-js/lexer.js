@@ -16,9 +16,10 @@ var Syntax = {
 
 Syntax.define("header", /^(\*+)\s+(.*)$/); // m[1] => level, m[2] => content
 Syntax.define("preformatted", /^(\s*): (.*)$/); // m[1] => indentation, m[2] => content
-Syntax.define("blank", /^$/);
 Syntax.define("unorderedListElement", /^(\s*)(?:-|\+|\s+\*)\s+(.*)$/); // m[1] => indentation, m[2] => content
 Syntax.define("orderedListElement", /^(\s*)(\d+)(?:\.|\))\s+(.*)$/); // m[1] => indentation, m[2] => number, m[3] => content
+Syntax.define("tableRow", /^(\s*)\|(.*?)\|?$/); // m[1] => indentation, m[2] => content
+Syntax.define("blank", /^$/);
 Syntax.define("line", /^(\s*)(.*)$/);
 
 // ------------------------------------------------------------
@@ -68,6 +69,10 @@ Lexer.prototype = {
       token.content     = RegExp.$3;
       // specific
       token.number      = RegExp.$2;
+    } else if (Syntax.isTableRow(line)) {
+      token.type        = Lexer.tokens.tableRow;
+      token.indentation = RegExp.$1.length;
+      token.content     = RegExp.$2;
     } else if (Syntax.isBlank(line)) {
       token.type        = Lexer.tokens.blank;
       token.indentation = 0;
@@ -118,7 +123,7 @@ Lexer.tokens = {
   orderedListElement   : 2,
   unorderedListElement : 3,
   blank                : 4,
-  table                : 5,
+  tableRow             : 5,
   preformatted         : 6
 };
 
