@@ -59,8 +59,10 @@ var HtmlTextConverter = {
       text = "<del>" + childText + "</del>";
       break;
     case Node.types.link:
-      // TODO: consider image
-      text = "<a href=\"" + node.src + "\">" + childText + "</a>";
+      if (this.imageExtensionPattern.exec(node.src))
+        text = "<img src=\"" + node.src + "\" alt=\"" + childText + "\"/>"; // TODO: escape childText
+      else
+        text = "<a href=\"" + node.src + "\">" + childText + "</a>";
       break;
     }
 
@@ -69,7 +71,12 @@ var HtmlTextConverter = {
 
   convertNodes: function (nodes) {
     return nodes.map(this.convertNode.bind(this)).join("");
-  }
+  },
+
+  imageExtensionPattern: new RegExp("(" + [
+    "bmp", "png", "jpeg", "jpg", "gif", "tiff",
+    "tif", "xbm", "xpm", "pbm", "pgm", "ppm"
+  ].join("|") + ")$")
 };
 
 if (typeof exports !== "undefined")
