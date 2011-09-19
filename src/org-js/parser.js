@@ -74,6 +74,8 @@ Parser.prototype = {
           element = this.parseElement();
       }
       break;
+    default:
+      throw new Error("Unhandled token: " + this.lexer.peekNextToken().type);
     }
 
     return element;
