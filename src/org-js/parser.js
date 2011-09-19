@@ -245,7 +245,7 @@ Parser.prototype = {
   // ------------------------------------------------------------
 
   createTextNode: function (text) {
-    return Node.createInlineContainer(this.inlineParser.parse(text));
+    return this.inlineParser.parseEmphasis(text);
   }
 };
 
@@ -268,17 +268,18 @@ function InlineParser() {
   ].join("|");
 
   this.emphasisPattern = this.buildEmphasisPattern();
-  this.linkPattern = /\[\[([^\]]*)\](?:\[([^\]]*)\])?\]/; // \1 => link, \2 => text
+  this.linkPattern = /\[\[([^\]]*)\](?:\[([^\]]*)\])?\]/g; // \1 => link, \2 => text
 }
 
 InlineParser.prototype = {
-  parse: function (text) {
+  parseEmphasis: function (text) {
     var emphasisPattern = this.emphasisPattern;
     emphasisPattern.lastIndex = 0;
 
-    var result = [];
-    var match;
-    var previousLast = 0;
+    var result = [],
+        match,
+        previousLast = 0,
+        savedLastIndex;
 
     while ((match = emphasisPattern.exec(text))) {
       var whole  = match[0];
@@ -287,32 +288,17 @@ InlineParser.prototype = {
       var body   = match[3];
       var post   = match[4];
 
-      var matchBegin = emphasisPattern.lastIndex - whole.length;
-      var beforeContent = text.substring(previousLast, matchBegin + pre.length);
-      result.push(Node.createText(null, { value: beforeContent }));
-
-      var bodyNode = [Node.createText(null, { value: body })];
-      var bodyContainer;
-
-      switch (marker) {
-      case "*":
-        bodyContainer = Node.createBold(bodyNode);
-        break;
-      case "/":
-        bodyContainer = Node.createItalic(bodyNode);
-        break;
-      case "_":
-        bodyContainer = Node.createUnderline(bodyNode);
-        break;
-      case "=":
-      case "~":
-        bodyContainer = Node.createCode(bodyNode);
-        break;
-      case "+":
-        bodyContainer = Node.createDashed(bodyNode);
-        break;
+      {
+        // parse links
+        var matchBegin = emphasisPattern.lastIndex - whole.length;
+        var beforeContent = text.substring(previousLast, matchBegin + pre.length);
+        savedLastIndex = emphasisPattern.lastIndex;
+        result.push(this.parseLink(beforeContent));
+        emphasisPattern.lastIndex = savedLastIndex;
       }
 
+      var bodyNode = [Node.createText(null, { value: body })];
+      var bodyContainer = this.emphasizeElementByMarker(bodyNode, marker);
       result.push(bodyContainer);
 
       previousLast = emphasisPattern.lastIndex - post.length;
@@ -320,9 +306,67 @@ InlineParser.prototype = {
 
     if (emphasisPattern.lastIndex === 0 ||
         emphasisPattern.lastIndex !== text.length - 1)
+      result.push(this.parseLink(text.substring(previousLast)));
+
+    return Node.createInlineContainer(result);
+  },
+
+  depth: 0,
+  parseLink: function (text) {
+    var linkPattern = this.linkPattern;
+    linkPattern.lastIndex = 0;
+
+    var match,
+        result = [],
+        previousLast = 0,
+        savedLastIndex;
+
+    while ((match = linkPattern.exec(text))) {
+      var whole = match[0];
+      var src   = match[1];
+      var title = match[2];
+
+      // parse before content
+      var matchBegin = linkPattern.lastIndex - whole.length;
+      var beforeContent = text.substring(previousLast, matchBegin);
+      result.push(Node.createText(null, { value: beforeContent }));
+
+      // parse link
+      var link = Node.createLink([]);
+      link.src = src;
+      if (title) {
+        savedLastIndex = linkPattern.lastIndex;
+        link.children.push(this.parseEmphasis(title));
+        linkPattern.lastIndex = savedLastIndex;
+      } else {
+        link.children.push(Node.createText(null, { value: src }));
+      }
+      result.push(link);
+
+      previousLast = linkPattern.lastIndex;
+    }
+
+    if (linkPattern.lastIndex === 0 ||
+        linkPattern.lastIndex !== text.length - 1)
       result.push(Node.createText(null, { value: text.substring(previousLast) }));
 
-    return result;
+    return Node.createInlineContainer(result);
+  },
+
+  emphasizeElementByMarker: function (element, marker) {
+    switch (marker) {
+    case "*":
+      return Node.createBold(element);
+    case "/":
+      return Node.createItalic(element);
+    case "_":
+      return Node.createUnderline(element);
+    case "=":
+    case "~":
+      return Node.createCode(element);
+    case "+":
+      return Node.createDashed(element);
+    }
   },
 
   buildEmphasisPattern: function () {

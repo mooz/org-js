@@ -58,6 +58,10 @@ var HtmlTextConverter = {
     case Node.types.dashed:
       text = "<del>" + childText + "</del>";
       break;
+    case Node.types.link:
+      // TODO: consider image
+      text = "<a href=\"" + node.src + "\">" + childText + "</a>\n";
+      break;
     }
 
     return text;

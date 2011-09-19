@@ -35,7 +35,6 @@ Node.define("preformatted");
 Node.define("table");
 Node.define("tableRow");
 Node.define("tableCell");
-// TODO: Table, Image
 
 // Inline
 Node.define("inlineContainer");
@@ -46,6 +45,9 @@ Node.define("underline");
 Node.define("code");
 Node.define("verbatim");
 Node.define("dashed");
+Node.define("link", function (node, options) {
+  node.src = options.src;
+});
 
 if (typeof exports !== "undefined")
   exports.Node = Node;
