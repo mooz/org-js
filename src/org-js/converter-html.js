@@ -29,13 +29,13 @@ var HtmlTextConverter = {
       break;
     case Node.types.table:
       // TODO: Consider <col> or <colgroup>
-      text = "<table><tbody>" + childText + "</tbody></table>\n";
+      text = "<table>\n<tbody>\n" + childText + "</tbody>\n</table>\n";
       break;
     case Node.types.tableRow:
       text = "<tr>" + childText + "</tr>\n";
       break;
     case Node.types.tableCell:
-      text = "<td>" + childText + "</td>\n";
+      text = "<td>" + childText + "</td>";
       break;
       // ============================================================ //
       // Inline
@@ -60,7 +60,7 @@ var HtmlTextConverter = {
       break;
     case Node.types.link:
       // TODO: consider image
-      text = "<a href=\"" + node.src + "\">" + childText + "</a>\n";
+      text = "<a href=\"" + node.src + "\">" + childText + "</a>";
       break;
     }
 
