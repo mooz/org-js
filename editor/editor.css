@@ -70,30 +70,48 @@ a:hover, a:active {
    Text
    ================================================== */
 
+/* title */
 #result h1 {
-    font-size     : 190%;
+    font-family      : "Century Gothic", "Trebuchet MS", sans-serif;
+    font-variant     : small-caps;
+    text-align       : center;
+    font-weight      : bold;
+
+    margin           : 0px auto 4px auto;
+    padding          : 8px 4px;
+    background-color : #030500;
+    color            : #f8ffee;
+    text-align       : right;
+    font-size        : 240%;
+}
+
+#result h2 {
+    font-size     : 180%;
     font-family   : "Century Gothic", "Trebuchet MS", sans-serif;
     font-variant  : small-caps;
     border-bottom : 1px solid #0E0E10;
     padding       : 3px 10px;
-    font-weight   : bold;
-}
-
-#result h2 {
-    font-size     : 170%;
-    border-bottom : 1px dashed #0E0E10;
-    padding       : 3px 10px;
+    margin        : 8px auto;
     font-weight   : bold;
 }
 
 #result h3 {
-    font-size     : 150%;
+    font-size     : 160%;
+    border-bottom : 1px dashed #0E0E10;
     padding       : 3px 10px;
+    margin        : 8px auto;
     font-weight   : bold;
 }
 
 #result h4 {
     font-size     : 130%;
+    padding       : 3px 10px;
+    margin        : 8px auto;
+    font-weight   : bold;
+}
+
+#result h5 {
+    font-size     : 110%;
     padding       : 3px 10px;
     font-weight   : bold;
 }
