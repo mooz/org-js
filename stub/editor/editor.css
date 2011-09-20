@@ -1,0 +1,145 @@
+html, body {
+    height   : 100%;
+    margin   : 0;
+    padding  : 0;
+    overflow : hidden;
+}
+
+body {
+    font-family : 'Trebuchet MS', Arial, Helvetica, sans-serif;
+}
+
+/* ==================================================
+   href
+   ================================================== */
+
+a {
+    text-decoration : underline;
+    color           : #278ac7;
+    font-weight     : bold;
+}
+
+a, a:link, a:visited {
+}
+
+a:hover, a:active {
+    text-decoration : none;
+}
+
+/* ==================================================
+   Content
+   ================================================== */
+
+#container {
+    height  : 100%;
+    margin  : 0;
+    padding : 0;
+}
+
+#container > div {
+  float   : left;
+  width   : 50%;
+}
+
+.input, #result {
+    display          : block;
+    width            : 100%;
+    height           : 100%;
+    background-color : white;
+    outline          : none;
+    border           : 0px;
+}
+
+#result-container {
+}
+
+.input {
+    font-family      : Monaco, Consolas, "Bitstream Vera Sans Mono", monospace;
+    overflow         : auto;
+    padding          : 10px;
+    background-color : #030500;
+    color            : #f8ffee;
+}
+
+#result {
+    border           : 0;
+    overflow         : auto;
+}
+
+/* ==================================================
+   Text
+   ================================================== */
+
+#result h1 {
+    font-size     : 190%;
+    font-family   : "Century Gothic", "Trebuchet MS", sans-serif;
+    font-variant  : small-caps;
+    border-bottom : 1px solid #0E0E10;
+    padding       : 3px 10px;
+    font-weight   : bold;
+}
+
+#result h2 {
+    font-size     : 170%;
+    border-bottom : 1px dashed #0E0E10;
+    padding       : 3px 10px;
+    font-weight   : bold;
+}
+
+#result h3 {
+    font-size     : 150%;
+    padding       : 3px 10px;
+    font-weight   : bold;
+}
+
+#result h4 {
+    font-size     : 130%;
+    padding       : 3px 10px;
+    font-weight   : bold;
+}
+
+#result pre, #result code {
+    border           : 1px solid #e2e2e2;
+    background-color : #ededed;
+}
+
+#result p {
+    padding : 4px 7px;
+    margin  : 0;
+}
+
+#result pre {
+    padding : 4px 7px;
+    margin  : 8px;
+}
+
+#result code {
+    margin-left   : 3px;
+    margin-right  : 3px;
+    padding-left  : 3px;
+    padding-right : 3px;
+}
+
+/* http://coding.smashingmagazine.com/2008/08/13/top-10-css-table-designs/ */
+
+#result table {
+    font-family     : "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
+    background      : #fff;
+    margin          : 10px auto;
+    width           : 80%;
+    border-collapse : collapse;
+    text-align      : left;
+}
+
+#result th {
+    font-weight   : bold;
+    color         : #039;
+    padding       : 6px 8px;
+    border-bottom : 2px solid #6678b1;
+}
+
+#result td {
+    border-bottom : 1px solid #ccc;
+    color         : #212142;
+    padding       : 6px 8px;
+}
