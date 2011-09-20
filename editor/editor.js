@@ -35,8 +35,7 @@ window.addEventListener("load", function () {
   }
 
   function restoreFromStorage() {
-    if (localStorage["code"])
-      setCode(localStorage["code"], true);
+    setCode(localStorage["code"] || "", true);
   }
 
   orgInputArea.addEventListener("input", onUpdate, false);
