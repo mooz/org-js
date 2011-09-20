@@ -2,7 +2,7 @@ window.addEventListener("load", function () {
   var orgInputArea = document.getElementById("org-input");
   var resultArea = document.getElementById("result");
 
-  var parser = new Parser();
+  var parser = new Org.Parser();
 
   function getCode() {
     return orgInputArea.value;
@@ -22,7 +22,7 @@ window.addEventListener("load", function () {
       return;
     }
 
-    resultArea.innerHTML = HtmlTextConverter.convertDocument(doc);
+    resultArea.innerHTML = Org.HtmlTextConverter.convertDocument(doc);
   }
 
   function onUpdate(ev) {
