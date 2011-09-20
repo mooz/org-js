@@ -55,6 +55,13 @@ if (typeof exports !== "undefined")
 // var Node = require("./node.js").Node;
 
 var HtmlTextConverter = {
+  convertDocument: function (doc) {
+    var title = doc.title ? this.convertNode(doc.title) : "untitled";
+
+    return "<h1>" + title + "</h1>\n"
+      + this.convertNodes(doc.nodes);
+  },
+
   convertNode: function (node) {
     var childText = node.children ? this.convertNodes(node.children) : "";
     var text;
@@ -64,7 +71,8 @@ var HtmlTextConverter = {
       text = node.value;
       break;
     case Node.types.header:
-      text = "<h" + node.level  + ">" + childText + "</h" + node.level  + ">\n";
+      var level = node.level + 1;
+      text = "<h" + level  + ">" + childText + "</h" + level  + ">\n";
       break;
     case Node.types.orderedList:
       text = "<ol>\n" + childText + "</ol>\n";
@@ -248,6 +256,12 @@ Lexer.prototype = {
     this.tokenStack.push(token);
   },
 
+  pushDummyTokenByType: function (type) {
+    var token = new Token();
+    token.type = type;
+    this.tokenStack.push(token);
+  },
+
   peekStackedToken: function () {
     return this.tokenStack.length > 0 ?
       this.tokenStack[this.tokenStack.length - 1] : null;
@@ -320,7 +334,6 @@ if (typeof exports !== "undefined") {
 // var Stream = require("./stream.js").Stream;
 // var Lexer  = require("./lexer.js").Lexer;
 // var Node   = require("./node.js").Node;
-// var assert = require("assert");
 
 function Parser() {
   this.inlineParser = new InlineParser();
@@ -331,13 +344,17 @@ Parser.prototype = {
     if (typeof stream === "string")
       stream = new Stream(stream);
     this.lexer = new Lexer(stream);
-    this.document = [];
+    this.nodes = [];
   },
 
   parse: function (stream) {
     this.initStatus(stream);
     this.parseDocument();
-    return this.document;
+    return {
+      nodes  : this.nodes,
+      title  : this.title,
+      author : this.author
+    };
   },
 
   skipBlank: function () {
@@ -352,10 +369,24 @@ Parser.prototype = {
   // ------------------------------------------------------------
 
   parseDocument: function () {
+    this.parseTitle();
+
     while (this.lexer.hasNext()) {
       var element = this.parseElement();
-      if (element) this.document.push(element);
+      if (element) this.nodes.push(element);
     }
+  },
+
+  parseTitle: function () {
+    this.skipBlank();
+
+    if (this.lexer.hasNext() &&
+        this.lexer.peekNextToken().type === Lexer.tokens.line)
+      this.title = this.createTextNode(this.lexer.getNextToken().content);
+    else
+      this.title = null;
+
+    this.lexer.pushDummyTokenByType(Lexer.tokens.blank);
   },
 
   // ------------------------------------------------------------
@@ -414,8 +445,6 @@ Parser.prototype = {
 
   parseHeader: function () {
     var headerToken = this.lexer.getNextToken();
-    assert.ok(headerToken.indentation === 0);
-
     var header = Node.createHeader([
       this.createTextNode(headerToken.content) // TODO: Parse inline markups
     ], { level: headerToken.level });
@@ -432,7 +461,6 @@ Parser.prototype = {
 
   parsePreformatted: function () {
     var preformattedFirstToken = this.lexer.peekNextToken();
-    assert.ok(preformattedFirstToken.type === Lexer.tokens.preformatted);
     var preformatted = Node.createPreformatted([]);
 
     var textContents = [];
@@ -476,7 +504,6 @@ Parser.prototype = {
 
   parseListElement: function (rootIndentation) {
     var listElementToken = this.lexer.getNextToken();
-    assert.ok(listElementToken.isListElement());
     var listElement = Node.createListElement([
       this.createTextNode(listElementToken.content)
     ]);
@@ -507,7 +534,6 @@ Parser.prototype = {
   parseTable: function () {
     var table = Node.createTable([]);
     var nextToken;
-
     var sawSeparator = false;
 
     while (this.lexer.hasNext() &&
@@ -555,7 +581,6 @@ Parser.prototype = {
 
   parseParagraph: function () {
     var paragraphFisrtToken = this.lexer.peekNextToken();
-    assert.ok(paragraphFisrtToken.type === Lexer.tokens.line);
     var paragraph = Node.createParagraph([]);
 
     var textContents = [];
@@ -576,7 +601,6 @@ Parser.prototype = {
 
   parseText: function () {
     var lineToken = this.lexer.getNextToken();
-    assert.ok(lineToken.type === Lexer.tokens.line);
     return this.createTextNode(lineToken.content);
   },
 

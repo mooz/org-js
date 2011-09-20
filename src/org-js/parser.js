@@ -11,13 +11,17 @@ Parser.prototype = {
     if (typeof stream === "string")
       stream = new Stream(stream);
     this.lexer = new Lexer(stream);
-    this.document = [];
+    this.nodes = [];
   },
 
   parse: function (stream) {
     this.initStatus(stream);
     this.parseDocument();
-    return this.document;
+    return {
+      nodes  : this.nodes,
+      title  : this.title,
+      author : this.author
+    };
   },
 
   skipBlank: function () {
@@ -32,10 +36,24 @@ Parser.prototype = {
   // ------------------------------------------------------------
 
   parseDocument: function () {
+    this.parseTitle();
+
     while (this.lexer.hasNext()) {
       var element = this.parseElement();
-      if (element) this.document.push(element);
+      if (element) this.nodes.push(element);
     }
+  },
+
+  parseTitle: function () {
+    this.skipBlank();
+
+    if (this.lexer.hasNext() &&
+        this.lexer.peekNextToken().type === Lexer.tokens.line)
+      this.title = this.createTextNode(this.lexer.getNextToken().content);
+    else
+      this.title = null;
+
+    this.lexer.pushDummyTokenByType(Lexer.tokens.blank);
   },
 
   // ------------------------------------------------------------

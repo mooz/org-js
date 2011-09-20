@@ -16,13 +16,13 @@ window.addEventListener("load", function () {
 
   function setHTMLFromCode(code) {
     try {
-      var nodes = parser.parse(code);
+      var doc = parser.parse(code);
     } catch (x) {
       alert(x);
       return;
     }
 
-    resultArea.innerHTML = HtmlTextConverter.convertNodes(nodes);
+    resultArea.innerHTML = HtmlTextConverter.convertDocument(doc);
   }
 
   function onUpdate(ev) {

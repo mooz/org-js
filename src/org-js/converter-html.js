@@ -1,6 +1,13 @@
 var Node = require("./node.js").Node;
 
 var HtmlTextConverter = {
+  convertDocument: function (doc) {
+    var title = doc.title ? this.convertNode(doc.title) : "untitled";
+
+    return "<h1>" + title + "</h1>\n"
+      + this.convertNodes(doc.nodes);
+  },
+
   convertNode: function (node) {
     var childText = node.children ? this.convertNodes(node.children) : "";
     var text;
@@ -10,7 +17,8 @@ var HtmlTextConverter = {
       text = node.value;
       break;
     case Node.types.header:
-      text = "<h" + node.level  + ">" + childText + "</h" + node.level  + ">\n";
+      var level = node.level + 1;
+      text = "<h" + level  + ">" + childText + "</h" + level  + ">\n";
       break;
     case Node.types.orderedList:
       text = "<ol>\n" + childText + "</ol>\n";

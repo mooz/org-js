@@ -107,6 +107,12 @@ Lexer.prototype = {
     this.tokenStack.push(token);
   },
 
+  pushDummyTokenByType: function (type) {
+    var token = new Token();
+    token.type = type;
+    this.tokenStack.push(token);
+  },
+
   peekStackedToken: function () {
     return this.tokenStack.length > 0 ?
       this.tokenStack[this.tokenStack.length - 1] : null;
