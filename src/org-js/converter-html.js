@@ -91,4 +91,4 @@ var HtmlTextConverter = {
 };
 
 if (typeof exports !== "undefined")
-  exports.HtmlConverter = HtmlTextConverter;
+  exports.HtmlTextConverter = HtmlTextConverter;
