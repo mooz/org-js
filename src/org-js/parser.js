@@ -74,6 +74,10 @@ Parser.prototype = {
           element = this.parseElement();
       }
       break;
+    case Lexer.tokens.comment:
+      // Skip
+      this.lexer.getNextToken();
+      break;
     default:
       throw new Error("Unhandled token: " + this.lexer.peekNextToken().type);
     }

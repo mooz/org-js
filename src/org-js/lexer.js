@@ -20,6 +20,7 @@ Syntax.define("unorderedListElement", /^(\s*)(?:-|\+|\s+\*)\s+(.*)$/); // m[1] =
 Syntax.define("orderedListElement", /^(\s*)(\d+)(?:\.|\))\s+(.*)$/); // m[1] => indentation, m[2] => number, m[3] => content
 Syntax.define("tableRow", /^(\s*)\|(.*?)\|?$/); // m[1] => indentation, m[2] => content
 Syntax.define("blank", /^$/);
+Syntax.define("comment", /^(\s*)#(.*)$/);
 Syntax.define("line", /^(\s*)(.*)$/);
 
 // ------------------------------------------------------------
@@ -77,6 +78,10 @@ Lexer.prototype = {
       token.type        = Lexer.tokens.blank;
       token.indentation = 0;
       token.content     = null;
+    } else if (Syntax.isComment(line)) {
+      token.type        = Lexer.tokens.comment;
+      token.indentation = RegExp.$1.length;
+      token.content     = RegExp.$2;
     } else if (Syntax.isLine(line)) {
       token.type        = Lexer.tokens.line;
       token.indentation = RegExp.$1.length;
@@ -117,15 +122,20 @@ Lexer.prototype = {
   }
 };
 
-Lexer.tokens = {
-  header               : 0,
-  line                 : 1,
-  orderedListElement   : 2,
-  unorderedListElement : 3,
-  blank                : 4,
-  tableRow             : 5,
-  preformatted         : 6
-};
+Lexer.tokens = {};
+[
+  "header",
+  "orderedListElement",
+  "unorderedListElement",
+  "tableRow",
+  "tableSeparator",
+  "preformatted",
+  "line",
+  "blank",
+  "comment"
+].forEach(function (tokenName, i) {
+  Lexer.tokens[tokenName] = i;
+});
 
 // ------------------------------------------------------------
 // Exports
