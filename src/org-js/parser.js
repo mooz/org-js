@@ -1,7 +1,6 @@
 var Stream = require("./stream.js").Stream;
 var Lexer  = require("./lexer.js").Lexer;
 var Node   = require("./node.js").Node;
-var assert = require("assert");
 
 function Parser() {
   this.inlineParser = new InlineParser();
@@ -95,8 +94,6 @@ Parser.prototype = {
 
   parseHeader: function () {
     var headerToken = this.lexer.getNextToken();
-    assert.ok(headerToken.indentation === 0);
-
     var header = Node.createHeader([
       this.createTextNode(headerToken.content) // TODO: Parse inline markups
     ], { level: headerToken.level });
@@ -113,7 +110,6 @@ Parser.prototype = {
 
   parsePreformatted: function () {
     var preformattedFirstToken = this.lexer.peekNextToken();
-    assert.ok(preformattedFirstToken.type === Lexer.tokens.preformatted);
     var preformatted = Node.createPreformatted([]);
 
     var textContents = [];
@@ -157,7 +153,6 @@ Parser.prototype = {
 
   parseListElement: function (rootIndentation) {
     var listElementToken = this.lexer.getNextToken();
-    assert.ok(listElementToken.isListElement());
     var listElement = Node.createListElement([
       this.createTextNode(listElementToken.content)
     ]);
@@ -235,7 +230,6 @@ Parser.prototype = {
 
   parseParagraph: function () {
     var paragraphFisrtToken = this.lexer.peekNextToken();
-    assert.ok(paragraphFisrtToken.type === Lexer.tokens.line);
     var paragraph = Node.createParagraph([]);
 
     var textContents = [];
@@ -256,7 +250,6 @@ Parser.prototype = {
 
   parseText: function () {
     var lineToken = this.lexer.getNextToken();
-    assert.ok(lineToken.type === Lexer.tokens.line);
     return this.createTextNode(lineToken.content);
   },
 
