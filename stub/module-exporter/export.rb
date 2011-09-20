@@ -88,9 +88,22 @@ module JSExporter
   end
 end
 
+module_name = "Org"
+
 exporter = JSExporter::Exporter.new(ARGV)
 exporter.remove_depend_notations
 exported = exporter.sorted_contents.join("\n")
-puts exported
+
+puts <<EOS
+var #{module_name} = (function () {
+  var exports = {};
+
+EOS
+puts exported.split("\n").map { |line| "  " + line }.join("\n")
+puts <<EOS
+
+  return exports;
+})();
+EOS
 
 $stderr.puts(exporter.sorted_paths.join("\n"))

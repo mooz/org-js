@@ -6,5 +6,4 @@ DIR_ORGJS=$DIR_EDITOR/../../src/org-js
 
 cd $DIR_EXPORTER
 
-./export.rb ../../src/org-js/*.js > ../editor/org.js && \
-    echo "\nvar assert = { ok: function () {} };" >> ../editor/org.js
+./export.rb ../../src/org-js/*.js > ../editor/org.js
