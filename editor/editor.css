@@ -45,6 +45,7 @@ a:hover, a:active {
     display          : block;
     width            : 100%;
     height           : 100%;
+    background-color : white;
     outline          : none;
     border           : 0px;
 }
@@ -63,7 +64,6 @@ a:hover, a:active {
 #result {
     border           : 0;
     overflow         : auto;
-    background-color : white;
 }
 
 /* ==================================================
