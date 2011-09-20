@@ -3,4 +3,12 @@ org-js
 
 Parser and converter for org-mode (<http://orgmode.org/>) notation written in JavaScript.
 
-_NOTE: This project is experimental and work in progress._
+Interactive Editor
+------------------
+
+For working example, see http://mooz.github.com/org-js/editor/.
+
+Disclaimer
+----------
+
+_This project is experimental and work in progress._
