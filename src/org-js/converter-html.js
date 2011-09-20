@@ -35,7 +35,10 @@ var HtmlTextConverter = {
       text = "<tr>" + childText + "</tr>\n";
       break;
     case Node.types.tableCell:
-      text = "<td>" + childText + "</td>";
+      if (node.isHeader)
+        text = "<th>" + childText + "</th>\n";
+      else
+        text = "<td>" + childText + "</td>";
       break;
       // ============================================================ //
       // Inline

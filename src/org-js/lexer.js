@@ -18,6 +18,7 @@ Syntax.define("header", /^(\*+)\s+(.*)$/); // m[1] => level, m[2] => content
 Syntax.define("preformatted", /^(\s*): (.*)$/); // m[1] => indentation, m[2] => content
 Syntax.define("unorderedListElement", /^(\s*)(?:-|\+|\s+\*)\s+(.*)$/); // m[1] => indentation, m[2] => content
 Syntax.define("orderedListElement", /^(\s*)(\d+)(?:\.|\))\s+(.*)$/); // m[1] => indentation, m[2] => number, m[3] => content
+Syntax.define("tableSeparator", /^(\s*)\|((?:\+|-)*?)\|?$/); // m[1] => indentation, m[2] => content
 Syntax.define("tableRow", /^(\s*)\|(.*?)\|?$/); // m[1] => indentation, m[2] => content
 Syntax.define("blank", /^$/);
 Syntax.define("comment", /^(\s*)#(.*)$/);
@@ -34,6 +35,11 @@ Token.prototype = {
   isListElement: function () {
     return this.type === Lexer.tokens.orderedListElement ||
       this.type === Lexer.tokens.unorderedListElement;
+  },
+
+  isTableElement: function () {
+    return this.type === Lexer.tokens.tableSeparator ||
+      this.type === Lexer.tokens.tableRow;
   }
 };
 
@@ -70,6 +76,10 @@ Lexer.prototype = {
       token.content     = RegExp.$3;
       // specific
       token.number      = RegExp.$2;
+    } else if (Syntax.isTableSeparator(line)) {
+      token.type        = Lexer.tokens.tableSeparator;
+      token.indentation = RegExp.$1.length;
+      token.content     = RegExp.$2;
     } else if (Syntax.isTableRow(line)) {
       token.type        = Lexer.tokens.tableRow;
       token.indentation = RegExp.$1.length;

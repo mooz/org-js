@@ -63,6 +63,7 @@ Parser.prototype = {
       element = this.parseText();
       break;
     case Lexer.tokens.tableRow:
+    case Lexer.tokens.tableSeparator:
       element = this.parseTable();
       break;
     case Lexer.tokens.blank:
@@ -186,10 +187,24 @@ Parser.prototype = {
 
   parseTable: function () {
     var table = Node.createTable([]);
+    var nextToken;
+    var sawSeparator = false;
 
     while (this.lexer.hasNext() &&
-           this.lexer.peekNextToken().type === Lexer.tokens.tableRow) {
-      table.children.push(this.parseTableRow());
+           (nextToken = this.lexer.peekNextToken()).isTableElement()) {
+      if (nextToken.type === Lexer.tokens.tableRow) {
+        var tableRow = this.parseTableRow();
+        table.children.push(tableRow);
+      } else {
+        sawSeparator = true;
+        this.lexer.getNextToken();
+      }
+    }
+
+    if (sawSeparator && table.children.length) {
+      table.children[0].children.forEach(function (cell) {
+        cell.isHeader = true;
+      });
     }
 
     return table;
@@ -207,8 +222,9 @@ Parser.prototype = {
       tableRowToken.content
         .split("|")
         .map(function (text) {
-          var inlineContainer = this.createTextNode(text);
-          return Node.createTableCell([inlineContainer]);
+          return Node.createTableCell([
+            this.createTextNode(text)
+          ]);
         }, this)
     );
   },
