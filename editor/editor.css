@@ -37,8 +37,9 @@ a:hover, a:active {
 }
 
 #container > div {
-  float   : left;
-  width   : 50%;
+    float  : left;
+    width  : 50%;
+    height : 100%;
 }
 
 .input, #result {
@@ -48,6 +49,8 @@ a:hover, a:active {
     background-color : white;
     outline          : none;
     border           : 0px;
+    margin           : 0;
+    padding          : 0;
 }
 
 #result-container {
@@ -57,13 +60,12 @@ a:hover, a:active {
     font-family      : Monaco, Consolas, "Bitstream Vera Sans Mono", monospace;
     overflow         : auto;
     padding          : 10px;
-    background-color : #030500;
-    color            : #f8ffee;
 }
 
 #result {
-    border           : 0;
-    overflow         : auto;
+    border      : 0;
+    overflow    : auto;
+    border-left : 1px solid black;
 }
 
 /* ==================================================
