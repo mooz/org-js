@@ -154,26 +154,49 @@ Parser.prototype = {
   //    2. baz
   // ------------------------------------------------------------
 
+  // XXX: not consider codes (e.g., =Foo::Bar=)
+  definitionPattern: /^(.*?) :: (.*)$/,
+
   parseList: function () {
     var rootToken = this.lexer.peekNextToken();
-    var list = rootToken.type === Lexer.tokens.unorderedListElement ?
-      Node.createUnorderedList([]) : Node.createOrderedList([]);
+    var list;
+    var isDefinitionList = false;
+
+    if (this.definitionPattern.test(rootToken.content)) {
+      list = Node.createDefinitionList([]);
+      isDefinitionList = true;
+    } else {
+      list = rootToken.type === Lexer.tokens.unorderedListElement ?
+        Node.createUnorderedList([]) : Node.createOrderedList([]);
+    }
 
     while (this.lexer.hasNext()) {
       var nextToken = this.lexer.peekNextToken();
       if (!nextToken.isListElement() || nextToken.indentation !== rootToken.indentation)
         break;
-      list.children.push(this.parseListElement(rootToken.indentation));
+      list.children.push(this.parseListElement(rootToken.indentation, isDefinitionList));
     }
 
     return list;
   },
 
-  parseListElement: function (rootIndentation) {
+  unknownDefinitionTerm: "???",
+
+  parseListElement: function (rootIndentation, isDefinitionList) {
     var listElementToken = this.lexer.getNextToken();
-    var listElement = Node.createListElement([
-      this.createTextNode(listElementToken.content)
-    ]);
+    var listElement = Node.createListElement([]);
+
+    listElement.isDefinitionList = isDefinitionList;
+
+    if (isDefinitionList) {
+      var match = this.definitionPattern.exec(listElementToken.content);
+      listElement.term = [
+        this.createTextNode(match && match[1] ? match[1] : this.unknownDefinitionTerm)
+      ];
+      listElement.children.push(this.createTextNode(match ? match[2] : listElementToken.content));
+    } else {
+      listElement.children.push(this.createTextNode(listElementToken.content));
+    }
 
     while (this.lexer.hasNext()) {
       var blankToken = this.skipBlank();

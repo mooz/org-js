@@ -26,8 +26,18 @@ var HtmlTextConverter = {
     case Node.types.unorderedList:
       text = "<ul>\n" + childText + "</ul>\n";
       break;
+    case Node.types.definitionList:
+      text = "<dl>\n" + childText + "</dl>\n";
+      break;
     case Node.types.listElement:
-      text = "<li>" + childText + "</li>\n";
+      if (node.isDefinitionList) {
+        var termText = this.convertNodes(node.term);
+        text =
+          "<dt>" + termText + "</dt>" +
+          "<dd>" + childText + "</dd>\n";
+      } else {
+        text = "<li>" + childText + "</li>\n";
+      }
       break;
     case Node.types.paragraph:
       text = "<p>" + childText + "</p>\n";

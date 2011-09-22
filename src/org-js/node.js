@@ -29,6 +29,7 @@ Node.define("header", function (node, options) {
 });
 Node.define("orderedList");
 Node.define("unorderedList");
+Node.define("definitionList");
 Node.define("listElement");
 Node.define("paragraph");
 Node.define("preformatted");
