@@ -163,3 +163,28 @@ a:hover, a:active {
     color         : #212142;
     padding       : 6px 8px;
 }
+
+#result dl {
+    padding     : 5px 7px;
+    margin      : 4px 7px;
+}
+
+#result dl dt {
+    font-weight   : bold;
+    margin        : 4px 0;
+    padding       : 4px;
+    font-size     : 120%;
+    border-bottom : 1px dashed #6678b1;
+}
+
+#result dl dd {
+    border-bottom : 1px dashed #ccc;
+    margin        : 7px 0 7px 2em;
+    padding       : 4px 4px;
+}
+
+#result hr {
+    height        : 1px;
+    border-width  : 0;
+    border-bottom : 1px solid black;
+}
