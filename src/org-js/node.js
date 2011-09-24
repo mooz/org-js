@@ -36,6 +36,7 @@ Node.define("preformatted");
 Node.define("table");
 Node.define("tableRow");
 Node.define("tableCell");
+Node.define("horizontalLine");
 
 // Inline
 Node.define("inlineContainer");

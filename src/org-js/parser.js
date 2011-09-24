@@ -92,6 +92,10 @@ Parser.prototype = {
           element = this.parseElement();
       }
       break;
+    case Lexer.tokens.horizontalLine:
+      this.lexer.getNextToken();
+      element = Node.createHorizontalLine();
+      break;
     case Lexer.tokens.comment:
       // Skip
       this.lexer.getNextToken();

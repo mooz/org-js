@@ -21,6 +21,7 @@ Syntax.define("orderedListElement", /^(\s*)(\d+)(?:\.|\))\s+(.*)$/); // m[1] => 
 Syntax.define("tableSeparator", /^(\s*)\|((?:\+|-)*?)\|?$/); // m[1] => indentation, m[2] => content
 Syntax.define("tableRow", /^(\s*)\|(.*?)\|?$/); // m[1] => indentation, m[2] => content
 Syntax.define("blank", /^$/);
+Syntax.define("horizontalLine", /^(\s*)-{5,}$/); //
 Syntax.define("comment", /^(\s*)#(.*)$/);
 Syntax.define("line", /^(\s*)(.*)$/);
 
@@ -88,6 +89,10 @@ Lexer.prototype = {
       token.type        = Lexer.tokens.blank;
       token.indentation = 0;
       token.content     = null;
+    } else if (Syntax.isHorizontalLine(line)) {
+      token.type        = Lexer.tokens.horizontalLine;
+      token.indentation = RegExp.$1.length;
+      token.content     = null;
     } else if (Syntax.isComment(line)) {
       token.type        = Lexer.tokens.comment;
       token.indentation = RegExp.$1.length;
@@ -147,6 +152,7 @@ Lexer.tokens = {};
   "tableSeparator",
   "preformatted",
   "line",
+  "horizontalLine",
   "blank",
   "comment"
 ].forEach(function (tokenName, i) {
