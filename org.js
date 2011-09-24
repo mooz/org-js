@@ -39,7 +39,7 @@ var Org = (function () {
   Node.define("table");
   Node.define("tableRow");
   Node.define("tableCell");
-  Node.define("horizontalLine");
+  Node.define("horizontalRule");
   
   // Inline
   Node.define("inlineContainer");
@@ -117,7 +117,7 @@ var Org = (function () {
         else
           text = "<td>" + childText + "</td>";
         break;
-      case Node.types.horizontalLine:
+      case Node.types.horizontalRule:
         text = "<hr />\n";
         break;
         // ============================================================ //
@@ -188,7 +188,7 @@ var Org = (function () {
   Syntax.define("tableSeparator", /^(\s*)\|((?:\+|-)*?)\|?$/); // m[1] => indentation, m[2] => content
   Syntax.define("tableRow", /^(\s*)\|(.*?)\|?$/); // m[1] => indentation, m[2] => content
   Syntax.define("blank", /^$/);
-  Syntax.define("horizontalLine", /^(\s*)-{5,}$/); //
+  Syntax.define("horizontalRule", /^(\s*)-{5,}$/); //
   Syntax.define("comment", /^(\s*)#(.*)$/);
   Syntax.define("line", /^(\s*)(.*)$/);
   
@@ -256,8 +256,8 @@ var Org = (function () {
         token.type        = Lexer.tokens.blank;
         token.indentation = 0;
         token.content     = null;
-      } else if (Syntax.isHorizontalLine(line)) {
-        token.type        = Lexer.tokens.horizontalLine;
+      } else if (Syntax.isHorizontalRule(line)) {
+        token.type        = Lexer.tokens.horizontalRule;
         token.indentation = RegExp.$1.length;
         token.content     = null;
       } else if (Syntax.isComment(line)) {
@@ -319,7 +319,7 @@ var Org = (function () {
     "tableSeparator",
     "preformatted",
     "line",
-    "horizontalLine",
+    "horizontalRule",
     "blank",
     "comment"
   ].forEach(function (tokenName, i) {
@@ -449,9 +449,9 @@ var Org = (function () {
             element = this.parseElement();
         }
         break;
-      case Lexer.tokens.horizontalLine:
+      case Lexer.tokens.horizontalRule:
         this.lexer.getNextToken();
-        element = Node.createHorizontalLine();
+        element = Node.createHorizontalRule();
         break;
       case Lexer.tokens.comment:
         // Skip

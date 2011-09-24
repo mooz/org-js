@@ -58,7 +58,7 @@ var HtmlTextConverter = {
       else
         text = "<td>" + childText + "</td>";
       break;
-    case Node.types.horizontalLine:
+    case Node.types.horizontalRule:
       text = "<hr />\n";
       break;
       // ============================================================ //
