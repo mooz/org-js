@@ -39,6 +39,7 @@ var Org = (function () {
   Node.define("table");
   Node.define("tableRow");
   Node.define("tableCell");
+  Node.define("horizontalLine");
   
   // Inline
   Node.define("inlineContainer");
@@ -116,6 +117,9 @@ var Org = (function () {
         else
           text = "<td>" + childText + "</td>";
         break;
+      case Node.types.horizontalLine:
+        text = "<hr />\n";
+        break;
         // ============================================================ //
         // Inline
         // ============================================================ //
@@ -184,6 +188,7 @@ var Org = (function () {
   Syntax.define("tableSeparator", /^(\s*)\|((?:\+|-)*?)\|?$/); // m[1] => indentation, m[2] => content
   Syntax.define("tableRow", /^(\s*)\|(.*?)\|?$/); // m[1] => indentation, m[2] => content
   Syntax.define("blank", /^$/);
+  Syntax.define("horizontalLine", /^(\s*)-{5,}$/); //
   Syntax.define("comment", /^(\s*)#(.*)$/);
   Syntax.define("line", /^(\s*)(.*)$/);
   
@@ -251,6 +256,10 @@ var Org = (function () {
         token.type        = Lexer.tokens.blank;
         token.indentation = 0;
         token.content     = null;
+      } else if (Syntax.isHorizontalLine(line)) {
+        token.type        = Lexer.tokens.horizontalLine;
+        token.indentation = RegExp.$1.length;
+        token.content     = null;
       } else if (Syntax.isComment(line)) {
         token.type        = Lexer.tokens.comment;
         token.indentation = RegExp.$1.length;
@@ -310,6 +319,7 @@ var Org = (function () {
     "tableSeparator",
     "preformatted",
     "line",
+    "horizontalLine",
     "blank",
     "comment"
   ].forEach(function (tokenName, i) {
@@ -438,6 +448,10 @@ var Org = (function () {
           else
             element = this.parseElement();
         }
+        break;
+      case Lexer.tokens.horizontalLine:
+        this.lexer.getNextToken();
+        element = Node.createHorizontalLine();
         break;
       case Lexer.tokens.comment:
         // Skip
