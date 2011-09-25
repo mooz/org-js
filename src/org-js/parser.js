@@ -159,7 +159,7 @@ Parser.prototype = {
   // ------------------------------------------------------------
 
   // XXX: not consider codes (e.g., =Foo::Bar=)
-  definitionPattern: /^(.*?) :: (.*)$/,
+  definitionPattern: /^(.*?) :: *(.*)$/,
 
   parseList: function () {
     var rootToken = this.lexer.peekNextToken();
