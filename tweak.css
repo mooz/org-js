@@ -1,0 +1,16 @@
+body {
+    padding-top: 10px;
+}
+
+#org-input, #result {
+    height: 400px;
+}
+
+#result {
+    border                : 1px solid #ccc;
+    -webkit-border-radius : 3px;
+    -moz-border-radius    : 3px;
+    border-radius         : 3px;
+    padding               : 4px;
+    overflow              : auto;
+}

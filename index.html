@@ -1,8 +1,50 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
     <head>
-        <title>org-js</title>
+        <meta charset="utf-8" />
+        <link rel="stylesheet" href="./bootstrap.css" />
+        <link rel="stylesheet" href="./tweak.css" />
+        <script type="text/javascript" src="https://raw.github.com/mooz/org-js/master/org.js"></script>
+        <script type="text/javascript" src="./editor/editor.js"></script>
+        <link rel="stylesheet" href="./prettify.css" />
+        <script type="text/javascript" src="./prettify.js"></script>
+        <title>org.js</title>
     </head>
-    <body>
-        <a href="./editor">Org Interactive Editor</a>
+    <body onload="prettyPrint()">
+        <div class="container">
+            <div class="content">
+                <div class="page-header">
+                    <h1>org.js <small>A parser and converter for org-mode notation</small></h1>
+                    <p>Repository on GitHub: <a href="http://github.com/mooz/org-js/">http://github.com/mooz/org-js/</a></p>
+                </div>
+                <div class="row">
+                    <div class="span16">
+                        <pre class="prettyprint">var code = [
+  "* head1",
+  "** head2",
+  "- definition element ::",
+  "    definition description",
+].join("\n");
+var parser = new Org.Parser();
+var doc    = parser.parse(code);
+var html   = Org.HtmlTextConverter.convertDocument(doc);</pre>
+                    </div>
+            </div>
+                <div class="row">
+                    <div class="span8">
+                        <textarea class="span8"
+                                  id="org-input"
+                                  placeholder="Input document in org-mode notation"></textarea>
+                    </div>
+                    <div class="span8">
+                        <div id="result"></div>
+                    </div>
+                </div>
+            </div>
+
+            <footer>
+                <p>Copyright &copy; 2011 <a href="http://mooz.github.com/">mooz</a></p>
+            </footer>
+        </div>
     </body>
 </html>
