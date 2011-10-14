@@ -14,3 +14,7 @@ body {
     padding               : 4px;
     overflow              : auto;
 }
+
+#result > * {
+    padding-left: 4px;
+}
