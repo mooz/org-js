@@ -7,9 +7,9 @@
   "main":"./lib/org.js",
   "version": "0.0.1",
   "directories": {
-    "test": "./test"
+    "test": "./tests"
   },
   "repository": {
-    "type": "git", "url": "git://github.com/daitangio/org-mode-parser.git"
+    "type": "git", "url": "git://github.com/mooz/org-js.git"
   }
 }
