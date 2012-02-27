@@ -1,0 +1,15 @@
+{
+  "name": "org-js",
+  "description": "A parser and converter for org-mode notation",
+  "homepage": "http://mooz.github.com/org-js",
+  "keywords": ["org-mode", "emacs", "parser"],
+  "author": "mooz <stillpedant@gmail.com>",
+  "main":"./lib/org.js",
+  "version": "0.0.1",
+  "directories": {
+    "test": "./test"
+  },
+  "repository": {
+    "type": "git", "url": "git://github.com/daitangio/org-mode-parser.git"
+  }
+}
