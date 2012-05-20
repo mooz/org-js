@@ -73,7 +73,7 @@ var Org = (function () {
   
       switch (node.type) {
       case Node.types.text:
-        text = node.value;
+        text = this.escapeTags(node.value);
         break;
       case Node.types.header:
         var level = node.level + 1;
@@ -154,6 +154,12 @@ var Org = (function () {
   
     convertNodes: function (nodes) {
       return nodes.map(this.convertNode.bind(this)).join("");
+    },
+  
+    escapeTags: function (text) {
+      return text.replace(/[&<>"']/g, function (matched) {
+        return "&#" + matched.charCodeAt(0) + ';';
+      });
     },
   
     imageExtensionPattern: new RegExp("(" + [
@@ -334,7 +340,7 @@ var Org = (function () {
     exports.Lexer = Lexer;
   
   function Stream(sequence) {
-    this.sequences = sequence.split("\n");
+    this.sequences = sequence.split(/\r?\n/);
     this.sequenceCount = this.sequences.length;
     this.position = 0;
   }
