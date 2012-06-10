@@ -17,12 +17,14 @@ window.addEventListener("load", function () {
   function setHTMLFromCode(code) {
     try {
       var doc = parser.parse(code);
+      resultArea.innerHTML = Org.HtmlTextConverter.convertDocument(doc);
     } catch (x) {
-      alert(x);
+      resultArea.innerHTML = "";
+      var errorNode = document.createElement("pre");
+      errorNode.textContent = x;
+      resultArea.appendChild(errorNode);
       return;
     }
-
-    resultArea.innerHTML = Org.HtmlTextConverter.convertDocument(doc);
   }
 
   function onUpdate(ev) {
