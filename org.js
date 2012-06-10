@@ -40,6 +40,7 @@ var Org = (function () {
   Node.define("tableRow");
   Node.define("tableCell");
   Node.define("horizontalRule");
+  Node.define("directive");
   
   // Inline
   Node.define("inlineContainer");
@@ -61,64 +62,114 @@ var Org = (function () {
   
   var HtmlTextConverter = {
     convertDocument: function (doc) {
-      var title = doc.title ? this.convertNode(doc.title) : "untitled";
+      this.initialize();
   
-      return "<h1>" + title + "</h1>\n"
-        + this.convertNodes(doc.nodes);
+      var title = doc.title ? this.convertNode(doc.title) : "Untitled";
+      var titleHTML = this.tag("h1", title);
+      var contentHTML = this.convertNodes(doc.nodes, true /* record headers */);
+      var tocHTML = this.generateToc();
+  
+      return titleHTML + tocHTML + this.tag("hr", null) + contentHTML;
     },
   
-    convertNode: function (node) {
-      var childText = node.children ? this.convertNodes(node.children) : "";
+    initialize: function () {
+      this.headers = [];
+    },
+  
+    // Call after convertNodes
+    generateToc: function () {
+      var toc = [];
+  
+      function repeat(text, n) {
+        return Array(n + 1).join(text);
+      }
+  
+      var unclosedUlCount = 0;
+      var previousLevel = 0;
+      for (var i = 0; i < this.headers.length; ++i) {
+        var headerNode = this.headers[i];
+  
+        var entry = this.tag(
+          "li",
+          this.inlineTag(
+            "a",
+            this.convertNodes(headerNode.children), { href: "#header-" + i }
+          )
+        );
+  
+        var levelDiff = headerNode.level - previousLevel;
+        if (levelDiff > 0) {
+          toc.push(repeat("<ul>", levelDiff));
+          unclosedUlCount += levelDiff;
+        } else if (levelDiff < 0) {
+          levelDiff = -levelDiff;
+          toc.push(repeat("</ul>", levelDiff));
+          unclosedUlCount -= levelDiff;
+        }
+  
+        toc.push(entry);
+        previousLevel = headerNode.level;
+      }
+  
+      // Close remained <ul>
+      if (unclosedUlCount > 0)
+        toc.push(repeat("</ul>", unclosedUlCount));
+  
+      return toc.join("");
+    },
+  
+    convertNode: function (node, recordHeader) {
+      var childText = node.children ? this.convertNodes(node.children, recordHeader) : "";
       var text;
   
       switch (node.type) {
       case Node.types.text:
-        text = this.escapeTags(node.value);
+        text = this.linkURL(this.escapeTags(node.value));
         break;
       case Node.types.header:
         var level = node.level + 1;
-        text = "<h" + level  + ">" + childText + "</h" + level  + ">\n";
+        text = this.tag("h" + level, childText, { id: "header-" + this.headers.length });
+        if (recordHeader)
+          this.headers.push(node);
         break;
       case Node.types.orderedList:
-        text = "<ol>\n" + childText + "</ol>\n";
+        text = this.tag("ol", childText);
         break;
       case Node.types.unorderedList:
-        text = "<ul>\n" + childText + "</ul>\n";
+        text = this.tag("ul", childText);
         break;
       case Node.types.definitionList:
-        text = "<dl>\n" + childText + "</dl>\n";
+        text = this.tag("dl", childText);
         break;
       case Node.types.listElement:
         if (node.isDefinitionList) {
-          var termText = this.convertNodes(node.term);
-          text =
-            "<dt>" + termText + "</dt>" +
-            "<dd>" + childText + "</dd>\n";
+          var termText = this.convertNodes(node.term, recordHeader);
+          text = this.tag("dt", termText) + this.tag("dd", childText);
         } else {
-          text = "<li>" + childText + "</li>\n";
+          text = this.tag("li", childText);
         }
         break;
       case Node.types.paragraph:
-        text = "<p>" + childText + "</p>\n";
+        text = this.tag("p", childText);
         break;
       case Node.types.preformatted:
-        text = "<pre>" + childText + "</pre>\n";
+        text = this.tag("pre", childText);
         break;
       case Node.types.table:
         // TODO: Consider <col> or <colgroup>
-        text = "<table>\n<tbody>\n" + childText + "</tbody>\n</table>\n";
+        text = this.tag("table", this.tag("tbody", childText));
         break;
       case Node.types.tableRow:
-        text = "<tr>" + childText + "</tr>\n";
+        text = this.tag("tr", childText);
         break;
       case Node.types.tableCell:
         if (node.isHeader)
-          text = "<th>" + childText + "</th>\n";
+          text = this.tag("th", childText);
         else
-          text = "<td>" + childText + "</td>";
+          text = this.tag("td", childText);
         break;
       case Node.types.horizontalRule:
-        text = "<hr />\n";
+        text = this.tag("hr", null);
         break;
         // ============================================================ //
         // Inline
@@ -127,33 +178,95 @@ var Org = (function () {
         text = childText;
         break;
       case Node.types.bold:
-        text = "<b>" + childText + "</b>";
+        text = this.inlineTag("b", childText);
         break;
       case Node.types.italic:
-        text = "<i>" + childText + "</i>";
+        text = this.inlineTag("i", childText);
         break;
       case Node.types.underline:
-        text = "<span style='text-decoration:underline;'>" + childText + "</span>";
+        text = this.inlineTag("span", childText, { style: "text-decoration:underline;" });
         break;
       case Node.types.code:
-        text = "<code>" + childText + "</code>";
+        text = this.inlineTag("code", childText);
         break;
       case Node.types.dashed:
-        text = "<del>" + childText + "</del>";
+        text = this.inlineTag("del", childText);
         break;
       case Node.types.link:
         if (this.imageExtensionPattern.exec(node.src))
-          text = "<img src=\"" + node.src + "\" alt=\"" + childText + "\"/>"; // TODO: escape childText
+          text = this.inlineTag("img", childText, { src: node.src, alt: childText });
         else
-          text = "<a href=\"" + node.src + "\">" + childText + "</a>";
+          text = this.inlineTag("a", childText, { href: node.src });
+        break;
+      case Node.types.directive:
+        var tagName;
+        var tagOptions = {};
+  
+        switch (node.directiveName) {
+        case "quote":
+          tagName = "blockquote";
+          break;
+        case "example":
+          tagName = "pre";
+          break;
+        case "src":
+          tagName = "pre";
+          tagOptions["class"] = "prettyprint";
+  
+          var codeLanguage = node.directiveArguments.length
+                ? node.directiveArguments[0]
+                : "unknown";
+          childText = this.tag("code", childText, { "class": "language-" + codeLanguage });
+          break;
+        }
+  
+        if (tagName)
+          text = this.tag(tagName, childText, tagOptions);
+        else
+          text = childText;
         break;
       }
   
       return text;
     },
   
-    convertNodes: function (nodes) {
-      return nodes.map(this.convertNode.bind(this)).join("");
+    inlineTag: function (name, innerText, attributes) {
+      if (innerText === null)
+        return "<" + name + "/>";
+  
+      attributes = attributes || {};
+  
+      var htmlString = "<" + name;
+      // Add attributes
+      for (var attributeName in attributes) {
+        if (attributes.hasOwnProperty(attributeName)) {
+          htmlString += " " + attributeName + "=\"" + attributes[attributeName] + "\"";
+        }
+      }
+      htmlString += ">" + innerText + "</" + name + ">";
+  
+      return htmlString;
+    },
+  
+    tag: function (name, innerText, attributes) {
+      return this.inlineTag(name, innerText, attributes) + "\n";
+    },
+  
+    // http://daringfireball.net/2010/07/improved_regex_for_matching_urls
+    urlPattern: /\b(?:https?:\/\/|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}\/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'".,<>?«»“”‘’])/i,
+  
+    linkURL: function (text) {
+      return text.replace(this.urlPattern, function (matched) {
+        if (matched.indexOf("://") < 0)
+          matched = "http://" + matched;
+        return "<a href=\"" + matched + "\">" + decodeURIComponent(matched) + "</a>";
+      });
+    },
+  
+    convertNodes: function (nodes, recordHeader) {
+      return nodes.map(function (node) {
+        return this.convertNode(node, recordHeader);
+      }, this).join("");
     },
   
     escapeTags: function (text) {
@@ -188,13 +301,14 @@ var Org = (function () {
   };
   
   Syntax.define("header", /^(\*+)\s+(.*)$/); // m[1] => level, m[2] => content
-  Syntax.define("preformatted", /^(\s*): (.*)$/); // m[1] => indentation, m[2] => content
+  Syntax.define("preformatted", /^(\s*):(?: (.*)$|$)/); // m[1] => indentation, m[2] => content
   Syntax.define("unorderedListElement", /^(\s*)(?:-|\+|\s+\*)\s+(.*)$/); // m[1] => indentation, m[2] => content
   Syntax.define("orderedListElement", /^(\s*)(\d+)(?:\.|\))\s+(.*)$/); // m[1] => indentation, m[2] => number, m[3] => content
   Syntax.define("tableSeparator", /^(\s*)\|((?:\+|-)*?)\|?$/); // m[1] => indentation, m[2] => content
   Syntax.define("tableRow", /^(\s*)\|(.*?)\|?$/); // m[1] => indentation, m[2] => content
   Syntax.define("blank", /^$/);
   Syntax.define("horizontalRule", /^(\s*)-{5,}$/); //
+  Syntax.define("directive", /^(\s*)#\+(?:(begin|end)_)?(.*)$/i); // m[1] => indentation, m[2] => type, m[3] => content
   Syntax.define("comment", /^(\s*)#(.*)$/);
   Syntax.define("line", /^(\s*)(.*)$/);
   
@@ -266,6 +380,18 @@ var Org = (function () {
         token.type        = Lexer.tokens.horizontalRule;
         token.indentation = RegExp.$1.length;
         token.content     = null;
+      } else if (Syntax.isDirective(line)) {
+        token.type        = Lexer.tokens.directive;
+        token.indentation = RegExp.$1.length;
+        token.content     = RegExp.$3;
+        // decide directive type (begin, end or oneshot)
+        var directiveTypeString = RegExp.$2;
+        if (/begin/i.test(directiveTypeString))
+          token.beginDirective = true;
+        else if (/end/i.test(directiveTypeString))
+          token.endDirective = true;
+        else
+          token.oneshotDirective = true;
       } else if (Syntax.isComment(line)) {
         token.type        = Lexer.tokens.comment;
         token.indentation = RegExp.$1.length;
@@ -327,6 +453,7 @@ var Org = (function () {
     "line",
     "horizontalRule",
     "blank",
+    "directive",
     "comment"
   ].forEach(function (tokenName, i) {
     Lexer.tokens[tokenName] = i;
@@ -459,6 +586,9 @@ var Org = (function () {
         this.lexer.getNextToken();
         element = Node.createHorizontalRule();
         break;
+      case Lexer.tokens.directive:
+        element = this.parseDirective();
+        break;
       case Lexer.tokens.comment:
         // Skip
         this.lexer.getNextToken();
@@ -508,7 +638,7 @@ var Org = (function () {
         textContents.push(token.content);
       }
   
-      preformatted.children.push(this.createTextNode(textContents.join("\n")));
+      preformatted.children.push(this.createTextNode(textContents.join("\n"), true /* no emphasis */));
   
       return preformatted;
     },
@@ -633,6 +763,83 @@ var Org = (function () {
     },
   
     // ------------------------------------------------------------
+    // <Directive> ::= "#+.*"
+    // ------------------------------------------------------------
+  
+    parseDirective: function () {
+      var directiveToken = this.lexer.getNextToken();
+  
+      if (directiveToken.endDirective)
+        throw new Error("Unmatched 'end' directive for " + directiveNode.directiveName);
+  
+      var matched = /^[ ]*([^ ]*)[ ]*(.*)[ ]*$/.exec(directiveToken.content);
+  
+      var directiveNode = Node.createDirective(null);
+      directiveNode.directiveName = matched[1].toLowerCase();
+      directiveNode.directiveArguments = this.parseDirectiveArguments(matched[2]);
+      directiveNode.directiveOptions = this.parseDirectiveOptions(matched[2]);
+  
+      if (directiveToken.oneshot)
+        return directiveNode;
+  
+      if (!directiveToken.beginDirective)
+        throw new Error("Invalid directive");
+  
+      // Parse begin ~ end
+      directiveNode.children = [];
+      if (this.isVerbatimDirective(directiveNode))
+        return this.parseDirectiveBlockVerbatim(directiveNode);
+      else
+        return this.parseDirectiveBlock(directiveNode);
+    },
+  
+    isVerbatimDirective: function (directiveNode) {
+      var directiveName = directiveNode.directiveName;
+      return directiveName === "src" || directiveName === "example";
+    },
+  
+    parseDirectiveBlock: function (directiveNode, verbatim) {
+      while (this.lexer.hasNext()) {
+        var nextToken = this.lexer.peekNextToken();
+        if (nextToken.type === Lexer.tokens.directive && nextToken.endDirective) {
+          this.lexer.getNextToken();
+          return directiveNode;
+        }
+        directiveNode.children.push(this.parseElement());
+      }
+  
+      throw new Error("Unclosed directive " + directiveNode.name);
+    },
+  
+    parseDirectiveBlockVerbatim: function (directiveNode) {
+      var textContent = [];
+  
+      while (this.lexer.hasNext()) {
+        var nextToken = this.lexer.peekNextToken();
+        if (nextToken.type === Lexer.tokens.directive && nextToken.endDirective) {
+          this.lexer.getNextToken();
+          directiveNode.children.push(this.createTextNode(textContent.join("\n"), true));
+          return directiveNode;
+        }
+        textContent.push(this.lexer.stream.getNextLine());
+      }
+  
+      throw new Error("Unclosed directive " + directiveNode.name);
+    },
+  
+    parseDirectiveArguments: function (parameters) {
+      return parameters.split(/[ ]+/).filter(function (param) {
+        return param.length && param[0] !== "-";
+      });
+    },
+  
+    parseDirectiveOptions: function (parameters) {
+      return parameters.split(/[ ]+/).filter(function (param) {
+        return param.length && param[0] === "-";
+      });
+    },
+  
+    // ------------------------------------------------------------
     // <Paragraph> ::= <Blank> <Line>*
     // ------------------------------------------------------------
   
@@ -656,17 +863,18 @@ var Org = (function () {
       return paragraph;
     },
   
-    parseText: function () {
+    parseText: function (noEmphasis) {
       var lineToken = this.lexer.getNextToken();
-      return this.createTextNode(lineToken.content);
+      return this.createTextNode(lineToken.content, noEmphasis);
     },
   
     // ------------------------------------------------------------
     // <Text> (DOM Like)
     // ------------------------------------------------------------
   
-    createTextNode: function (text) {
-      return this.inlineParser.parseEmphasis(text);
+    createTextNode: function (text, noEmphasis) {
+      return noEmphasis ? Node.createText(null, { value: text })
+        : this.inlineParser.parseEmphasis(text);
     }
   };
   
