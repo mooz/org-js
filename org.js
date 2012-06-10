@@ -768,22 +768,16 @@ var Org = (function () {
   
     parseDirective: function () {
       var directiveToken = this.lexer.getNextToken();
+      var directiveNode = this.createDirectiveNodeFromToken(directiveToken);
   
       if (directiveToken.endDirective)
         throw new Error("Unmatched 'end' directive for " + directiveNode.directiveName);
-  
-      var matched = /^[ ]*([^ ]*)[ ]*(.*)[ ]*$/.exec(directiveToken.content);
-  
-      var directiveNode = Node.createDirective(null);
-      directiveNode.directiveName = matched[1].toLowerCase();
-      directiveNode.directiveArguments = this.parseDirectiveArguments(matched[2]);
-      directiveNode.directiveOptions = this.parseDirectiveOptions(matched[2]);
   
       if (directiveToken.oneshot)
         return directiveNode;
   
       if (!directiveToken.beginDirective)
-        throw new Error("Invalid directive");
+        throw new Error("Invalid directive " + directiveNode.directiveName);
   
       // Parse begin ~ end
       directiveNode.children = [];
@@ -791,6 +785,17 @@ var Org = (function () {
         return this.parseDirectiveBlockVerbatim(directiveNode);
       else
         return this.parseDirectiveBlock(directiveNode);
+    },
+  
+    createDirectiveNodeFromToken: function (directiveToken) {
+      var matched = /^[ ]*([^ ]*)[ ]*(.*)[ ]*$/.exec(directiveToken.content);
+  
+      var directiveNode = Node.createDirective(null);
+      directiveNode.directiveName = matched[1].toLowerCase();
+      directiveNode.directiveArguments = this.parseDirectiveArguments(matched[2]);
+      directiveNode.directiveOptions = this.parseDirectiveOptions(matched[2]);
+  
+      return directiveNode;
     },
   
     isVerbatimDirective: function (directiveNode) {
@@ -801,14 +806,16 @@ var Org = (function () {
     parseDirectiveBlock: function (directiveNode, verbatim) {
       while (this.lexer.hasNext()) {
         var nextToken = this.lexer.peekNextToken();
-        if (nextToken.type === Lexer.tokens.directive && nextToken.endDirective) {
+        if (nextToken.type === Lexer.tokens.directive &&
+            nextToken.endDirective &&
+            this.createDirectiveNodeFromToken(nextToken).directiveName === directiveNode.directiveName) {
           this.lexer.getNextToken();
           return directiveNode;
         }
         directiveNode.children.push(this.parseElement());
       }
   
-      throw new Error("Unclosed directive " + directiveNode.name);
+      throw new Error("Unclosed directive " + directiveNode.directiveName);
     },
   
     parseDirectiveBlockVerbatim: function (directiveNode) {
@@ -816,7 +823,9 @@ var Org = (function () {
   
       while (this.lexer.hasNext()) {
         var nextToken = this.lexer.peekNextToken();
-        if (nextToken.type === Lexer.tokens.directive && nextToken.endDirective) {
+        if (nextToken.type === Lexer.tokens.directive &&
+            nextToken.endDirective &&
+            this.createDirectiveNodeFromToken(nextToken).directiveName === directiveNode.directiveName) {
           this.lexer.getNextToken();
           directiveNode.children.push(this.createTextNode(textContent.join("\n"), true));
           return directiveNode;
@@ -824,7 +833,7 @@ var Org = (function () {
         textContent.push(this.lexer.stream.getNextLine());
       }
   
-      throw new Error("Unclosed directive " + directiveNode.name);
+      throw new Error("Unclosed directive " + directiveNode.directiveName);
     },
   
     parseDirectiveArguments: function (parameters) {
