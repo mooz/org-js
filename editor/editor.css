@@ -123,6 +123,10 @@ a:hover, a:active {
     background-color : #ededed;
 }
 
+#result pre > code {
+    border : 0;
+}
+
 #result p {
     padding : 4px 7px;
     margin  : 0;
