@@ -278,7 +278,8 @@ var Org = (function () {
       this.nodes = [];
       this.options = {
         toc: true,
-        num: true
+        num: true,
+        "^": "{}"
       };
       this.document = {
         options : this.options
@@ -936,9 +937,6 @@ var Org = (function () {
       var text;
   
       switch (node.type) {
-      case Node.types.text:
-        text = this.linkURL(this.escapeTags(node.value));
-        break;
       case Node.types.header:
         // Add section number
         if (this.documentOptions.num && recordHeader) {
@@ -1056,9 +1054,13 @@ var Org = (function () {
         else
           text = childText;
         break;
+      case Node.types.text:
+        text = this.linkURL(this.makeSubscripts(this.escapeTags(node.value)));
+        break;
       default:
         if (typeof node === "string")
-          return text = node;
+          text = this.linkURL(this.makeSubscripts(this.escapeTags(node)));
+        break;
       }
   
       return text;
@@ -1096,6 +1098,17 @@ var Org = (function () {
           matched = "http://" + matched;
         return "<a href=\"" + matched + "\">" + decodeURIComponent(matched) + "</a>";
       });
+    },
+  
+    makeSubscripts: function (text) {
+      console.log("make suhbscript: |" + this.documentOptions["^"] + "|");
+      var replacee = "<span class=\"org-subscript-parent\">$1</span><span class=\"org-subscript-child\">$2</span>";
+      if (this.documentOptions["^"] === "{}")
+        return text.replace(/\b([^_ \t]*)_{([^}]*)}/g, replacee);
+      else if (this.documentOptions["^"])
+        return text.replace(/\b([^_ \t]*)_([^_]*)\b/g, replacee);
+      else
+        return text;
     },
   
     convertNodes: function (nodes, recordHeader) {
