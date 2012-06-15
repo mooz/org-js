@@ -595,7 +595,7 @@ var Org = (function () {
         }
         var element = this.parseElement();
         if (element)
-          directiveNode.children.push();
+          directiveNode.children.push(element);
       }
   
       throw new Error("Unclosed directive " + directiveNode.directiveName);
@@ -867,7 +867,7 @@ var Org = (function () {
     initialize: function () {
       this.headers = [];
       this.headerOffset = typeof this.exportOptions.headerOffset === "number" ? this.headerOffset : 1;
-      this.headerNumbers = [0];
+      this.sectionNumbers = [0];
     },
   
     // Call after convertNodes
@@ -884,6 +884,7 @@ var Org = (function () {
         return Array(n + 1).join(text);
       }
   
+      var sectionNumbers = [0];
       var unclosedUlCount = 0;
       var previousLevel = 0;
       for (var i = 0; i < this.headers.length; ++i) {
@@ -892,25 +893,27 @@ var Org = (function () {
         if (headerNode.level > exportTocLevel)
           continue;
   
-        var entry = this.tag(
-          "li",
-          this.inlineTag(
-            "a",
-            this.convertNodes(headerNode.children), { href: "#header-" + i }
-          )
-        );
-  
         var levelDiff = headerNode.level - previousLevel;
         if (levelDiff > 0) {
           toc.push(repeat("<ul>", levelDiff));
           unclosedUlCount += levelDiff;
+          sectionNumbers[headerNode.level - 1] = 0;
         } else if (levelDiff < 0) {
           levelDiff = -levelDiff;
           toc.push(repeat("</ul>", levelDiff));
           unclosedUlCount -= levelDiff;
+          sectionNumbers.length = headerNode.level;
         }
   
-        toc.push(entry);
+        sectionNumbers[sectionNumbers.length - 1]++;
+  
+        var sectionNumber = sectionNumbers.join(".");
+        var sectionNumberString = this.documentOptions.num ?
+              this.inlineTag("span", sectionNumber, { "class": "section-number" }) : "";
+        var headerString = this.convertNodes(headerNode.children);
+        var headerLink = this.inlineTag("a", sectionNumberString + headerString, { href: "#header-" + i });
+  
+        toc.push(this.tag("li", headerLink));
         previousLevel = headerNode.level;
       }
   
@@ -918,7 +921,7 @@ var Org = (function () {
       if (unclosedUlCount > 0)
         toc.push(repeat("</ul>", unclosedUlCount));
   
-      return toc.join("");
+      return this.tag("div", toc.join(""), { id: "org-toc" });
     },
   
     getNodeTextContent: function (node) {
@@ -941,16 +944,16 @@ var Org = (function () {
         if (this.documentOptions.num && recordHeader) {
           var thisHeaderLevel = node.level;
           var levelDiff = null;
-          var previousHeaderLevel = this.headerNumbers.length;
+          var previousHeaderLevel = this.sectionNumbers.length;
   
           if (thisHeaderLevel > previousHeaderLevel)
-            this.headerNumbers[thisHeaderLevel - 1] = 0; // Extend (TODO: fill out skipped elements with 0)
+            this.sectionNumbers[thisHeaderLevel - 1] = 0; // Extend (TODO: fill out skipped elements with 0)
           else if (thisHeaderLevel < previousHeaderLevel)
-            this.headerNumbers.length = thisHeaderLevel; // Collapse
+            this.sectionNumbers.length = thisHeaderLevel; // Collapse
   
-          this.headerNumbers[thisHeaderLevel - 1]++;
+          this.sectionNumbers[thisHeaderLevel - 1]++;
   
-          childText = this.inlineTag("span", this.headerNumbers.join("."), {
+          childText = this.inlineTag("span", this.sectionNumbers.join("."), {
             "class": "section-number"
           }) + childText;
         }
