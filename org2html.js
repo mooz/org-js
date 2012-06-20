@@ -1,24 +1,27 @@
 #!/usr/bin/env node
 
-require.paths.push("./src/org-js/");
+try {
+  var org = require("org-js");
+} catch (x) {
+  org = require(".");
+}
+var parser = new org.Parser();
 
-var Parser        = require("parser.js").Parser;
-var HtmlConverter = require("converter-html.js").HtmlConverter;
+process.stdin.resume();
+process.stdin.setEncoding('utf8');
 
-var stdin = process.openStdin();
-var input = '';
-
-stdin.setEncoding('utf8');
-stdin.on('data', function (data) {
-  if (data)
-    input += data;
+var orgCode = "";
+process.stdin.on('data', function (chunk) {
+  orgCode += chunk;
 });
 
-stdin.on('end', function () {
-  if (!input)
-    return;
-  var parser = new Parser();
-  var nodes  = parser.parse(input);
-  var htmlString = HtmlConverter.convertNodes(nodes);
-  console.log(htmlString);
+process.stdin.on('end', function () {
+  parseAndOutputHTML();
 });
+
+function parseAndOutputHTML() {
+  var orgDocument = parser.parse(orgCode);
+  var exportOptions = {};
+  var orgHTML = org.HtmlTextConverter.convertDocument(orgDocument, exportOptions);
+  console.log(orgHTML);
+}

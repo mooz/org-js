@@ -8,6 +8,11 @@ Interactive Editor
 
 For working example, see http://mooz.github.com/org-js/editor/.
 
+Org to HTML
+-----------
+
+    node org2html.js < test.org
+
 Disclaimer
 ----------
 
