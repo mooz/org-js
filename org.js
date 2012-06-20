@@ -1,22 +1,79 @@
 var Org = (function () {
   var exports = {};
 
+  var Node = {
+    types: {},
+  
+    define: function (name, postProcess) {
+      this.types[name] = name;
+  
+      var methodName = "create" + name.substring(0, 1).toUpperCase() + name.substring(1);
+      var postProcessGiven = typeof postProcess === "function";
+  
+      this[methodName] = function (children, options) {
+        var node = {
+          type: name,
+          children: children
+        };
+  
+        if (postProcessGiven)
+          postProcess(node, options || {});
+  
+        return node;
+      };
+    }
+  };
+  
+  Node.define("text", function (node, options) {
+    node.value = options.value;
+  });
+  Node.define("header", function (node, options) {
+    node.level = options.level;
+  });
+  Node.define("orderedList");
+  Node.define("unorderedList");
+  Node.define("definitionList");
+  Node.define("listElement");
+  Node.define("paragraph");
+  Node.define("preformatted");
+  Node.define("table");
+  Node.define("tableRow");
+  Node.define("tableCell");
+  Node.define("horizontalRule");
+  Node.define("directive");
+  
+  // Inline
+  Node.define("inlineContainer");
+  
+  Node.define("bold");
+  Node.define("italic");
+  Node.define("underline");
+  Node.define("code");
+  Node.define("verbatim");
+  Node.define("dashed");
+  Node.define("link", function (node, options) {
+    node.src = options.src;
+  });
+  
+  if (typeof exports !== "undefined")
+    exports.Node = Node;
+  
   function Stream(sequence) {
     this.sequences = sequence.split(/\r?\n/);
-    this.sequenceCount = this.sequences.length;
-    this.position = 0;
+    this.totalLines = this.sequences.length;
+    this.lineNumber = 0;
   }
   
   Stream.prototype.peekNextLine = function () {
-    return this.hasNext() ? this.sequences[this.position] : null;
+    return this.hasNext() ? this.sequences[this.lineNumber] : null;
   };
   
   Stream.prototype.getNextLine = function () {
-    return this.hasNext() ? this.sequences[this.position++] : null;
+    return this.hasNext() ? this.sequences[this.lineNumber++] : null;
   };
   
   Stream.prototype.hasNext = function () {
-    return this.position < this.sequenceCount;
+    return this.lineNumber < this.totalLines;
   };
   
   if (typeof exports !== "undefined") {
@@ -82,6 +139,7 @@ var Org = (function () {
   Lexer.prototype = {
     tokenize: function (line) {
       var token = new Token();
+      token.fromLineNumber = this.stream.lineNumber;
   
       if (Syntax.isHeader(line)) {
         token.type        = Lexer.tokens.header;
@@ -205,63 +263,6 @@ var Org = (function () {
   if (typeof exports !== "undefined")
     exports.Lexer = Lexer;
   
-  var Node = {
-    types: {},
-  
-    define: function (name, postProcess) {
-      this.types[name] = name;
-  
-      var methodName = "create" + name.substring(0, 1).toUpperCase() + name.substring(1);
-      var postProcessGiven = typeof postProcess === "function";
-  
-      this[methodName] = function (children, options) {
-        var node = {
-          type: name,
-          children: children
-        };
-  
-        if (postProcessGiven)
-          postProcess(node, options || {});
-  
-        return node;
-      };
-    }
-  };
-  
-  Node.define("text", function (node, options) {
-    node.value = options.value;
-  });
-  Node.define("header", function (node, options) {
-    node.level = options.level;
-  });
-  Node.define("orderedList");
-  Node.define("unorderedList");
-  Node.define("definitionList");
-  Node.define("listElement");
-  Node.define("paragraph");
-  Node.define("preformatted");
-  Node.define("table");
-  Node.define("tableRow");
-  Node.define("tableCell");
-  Node.define("horizontalRule");
-  Node.define("directive");
-  
-  // Inline
-  Node.define("inlineContainer");
-  
-  Node.define("bold");
-  Node.define("italic");
-  Node.define("underline");
-  Node.define("code");
-  Node.define("verbatim");
-  Node.define("dashed");
-  Node.define("link", function (node, options) {
-    node.src = options.src;
-  });
-  
-  if (typeof exports !== "undefined")
-    exports.Node = Node;
-  
   // var Stream = require("./stream.js").Stream;
   // var Lexer  = require("./lexer.js").Lexer;
   // var Node   = require("./node.js").Node;
@@ -298,6 +299,11 @@ var Org = (function () {
       while (this.lexer.peekNextToken().type === Lexer.tokens.blank)
         blankToken = this.lexer.getNextToken();
       return blankToken;
+    },
+  
+    setNodeOriginFromToken: function (node, token) {
+      node.fromLineNumber = token.fromLineNumber;
+      return node;
     },
   
     // ------------------------------------------------------------
@@ -391,6 +397,7 @@ var Org = (function () {
       var header = Node.createHeader([
         this.createTextNode(headerToken.content) // TODO: Parse inline markups
       ], { level: headerToken.level });
+      this.setNodeOriginFromToken(header, headerToken);
   
       return header;
     },
@@ -405,6 +412,7 @@ var Org = (function () {
     parsePreformatted: function () {
       var preformattedFirstToken = this.lexer.peekNextToken();
       var preformatted = Node.createPreformatted([]);
+      this.setNodeOriginFromToken(preformatted, preformattedFirstToken);
   
       var textContents = [];
   
@@ -445,6 +453,7 @@ var Org = (function () {
         list = rootToken.type === Lexer.tokens.unorderedListElement ?
           Node.createUnorderedList([]) : Node.createOrderedList([]);
       }
+      this.setNodeOriginFromToken(list, rootToken);
   
       while (this.lexer.hasNext()) {
         var nextToken = this.lexer.peekNextToken();
@@ -461,6 +470,7 @@ var Org = (function () {
     parseListElement: function (rootIndentation, isDefinitionList) {
       var listElementToken = this.lexer.getNextToken();
       var listElement = Node.createListElement([]);
+      this.setNodeOriginFromToken(listElement, listElementToken);
   
       listElement.isDefinitionList = isDefinitionList;
   
@@ -498,8 +508,9 @@ var Org = (function () {
     // ------------------------------------------------------------
   
     parseTable: function () {
+      var nextToken = this.lexer.peekNextToken();
       var table = Node.createTable([]);
-      var nextToken;
+      this.setNodeOriginFromToken(table, nextToken);
       var sawSeparator = false;
   
       while (this.lexer.hasNext() &&
@@ -528,17 +539,15 @@ var Org = (function () {
   
     parseTableRow: function () {
       var tableRowToken = this.lexer.getNextToken();
+      var tableCells = tableRowToken.content
+            .split("|")           // TODO: consider '|' escape?
+            .map(function (text) {
+              return Node.createTableCell([
+                this.createTextNode(text)
+              ]);
+            }, this);
   
-      // XXX: Low performance
-      return Node.createTableRow(
-        tableRowToken.content
-          .split("|")
-          .map(function (text) {
-            return Node.createTableCell([
-              this.createTextNode(text)
-            ]);
-          }, this)
-      );
+      return this.setNodeOriginFromToken(Node.createTableRow(tableCells), tableRowToken);
     },
   
     // ------------------------------------------------------------
@@ -572,6 +581,7 @@ var Org = (function () {
       var matched = /^[ ]*([^ ]*)[ ]*(.*)[ ]*$/.exec(directiveToken.content);
   
       var directiveNode = Node.createDirective(null);
+      this.setNodeOriginFromToken(directiveNode, directiveToken);
       directiveNode.directiveName = matched[1].toLowerCase();
       directiveNode.directiveArguments = this.parseDirectiveArguments(matched[2]);
       directiveNode.directiveOptions = this.parseDirectiveOptions(matched[2]);
@@ -676,6 +686,7 @@ var Org = (function () {
     parseParagraph: function () {
       var paragraphFisrtToken = this.lexer.peekNextToken();
       var paragraph = Node.createParagraph([]);
+      this.setNodeOriginFromToken(paragraph, paragraphFisrtToken);
   
       var textContents = [];
   
@@ -1061,6 +1072,13 @@ var Org = (function () {
         if (typeof node === "string")
           text = this.linkURL(this.makeSubscripts(this.escapeTags(node)));
         break;
+      }
+  
+      if (this.exportOptions.exportFromLineNumber && typeof node.fromLineNumber === "number") {
+        text = this.inlineTag("div", text, {
+          "class": "org-line-container",
+          "data-line-number": node.fromLineNumber
+        });
       }
   
       return text;
