@@ -3,7 +3,7 @@
 try {
   var org = require("org-js");
 } catch (x) {
-  org = require(".");
+  org = require("./");
 }
 var parser = new org.Parser();
 
