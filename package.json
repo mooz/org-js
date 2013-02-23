@@ -1,5 +1,5 @@
 {
-  "name": "org-js",
+  "name": "org",
   "description": "A parser and converter for org-mode notation",
   "homepage": "http://mooz.github.com/org-js",
   "keywords": ["org-mode", "emacs", "parser"],
