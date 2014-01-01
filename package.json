@@ -5,7 +5,7 @@
   "keywords": ["org-mode", "emacs", "parser"],
   "author": "mooz <stillpedant@gmail.com>",
   "main":"./lib/org.js",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "directories": {
     "test": "./tests"
   },
