@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 try {
-  var org = require("org-js");
+  var org = require("org");
 } catch (x) {
   org = require("./");
 }

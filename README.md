@@ -8,12 +8,31 @@ Interactive Editor
 
 For working example, see http://mooz.github.com/org-js/editor/.
 
-Org to HTML
------------
+Installation
+------------
 
-    node org2html.js < test.org
+    npm install org
 
-Disclaimer
-----------
+Simple example of org -> HTML conversion
+----------------------------------------
 
-_This project is experimental and work in progress._
+```javascript
+var org = require("org");
+
+var parser = new org.Parser();
+var orgDocument = parser.parse(orgCode);
+var orgHTMLDocument = orgDocument.convert(org.ConverterHTML, {
+  headerOffset: 1,
+  exportFromLineNumber: false,
+  suppressSubScriptHandling: false,
+  suppressAutoLink: false
+});
+
+console.dir(orgHTMLDocument); // => { title, contentHTML, tocHTML, toc }
+console.log(orgHTMLDocument.toString()) // => Rendered HTML
+```
+
+Writing yet another converter
+-----------------------------
+
+See `lib/org/converter/html.js`.
