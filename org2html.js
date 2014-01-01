@@ -3,7 +3,7 @@
 try {
   var org = require("org-js");
 } catch (x) {
-  org = require(".");
+  org = require("./");
 }
 var parser = new org.Parser();
 
@@ -21,7 +21,6 @@ process.stdin.on('end', function () {
 
 function parseAndOutputHTML() {
   var orgDocument = parser.parse(orgCode);
-  var exportOptions = {};
-  var orgHTML = org.HtmlTextConverter.convertDocument(orgDocument, exportOptions);
-  console.log(orgHTML);
+  var orgHTMLDocument = orgDocument.convert(org.ConverterHTML, {});
+  console.log(orgHTMLDocument.toString());
 }
