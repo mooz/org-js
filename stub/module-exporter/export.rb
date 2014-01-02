@@ -1,5 +1,8 @@
 #!/usr/bin/env ruby
 
+# Customize this name
+module_name = "Org"
+
 module JSExporter
   class Sorter
     def initialize()
@@ -88,18 +91,27 @@ module JSExporter
   end
 end
 
-module_name = "Org"
-
 exporter = JSExporter::Exporter.new(ARGV)
 exporter.remove_depend_notations
-exported = exporter.sorted_contents.join("\n")
+sorted_contents = exporter.sorted_contents
 
 puts <<EOS
 var #{module_name} = (function () {
   var exports = {};
 
 EOS
-puts exported.split("\n").map { |line| "  " + line }.join("\n")
+
+puts sorted_contents.map { |content|
+  # Add indentation
+  content.split("\n").map { |line|
+    if line == ""
+      line
+    else
+      "  " + line
+    end
+  }.join("\n") + "\n"
+}.join("\n")
+
 puts <<EOS
 
   return exports;
