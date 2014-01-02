@@ -1,47 +1,45 @@
-window.addEventListener("load", function () {
-  var orgInputArea = document.getElementById("org-input");
-  var resultArea = document.getElementById("result");
+$(function () {
+  var $orgInputArea = $("#org-input");
+  var $resultArea = $("#result");
 
-  var parser = new Org.Parser();
+  var orgParser = new Org.Parser();
 
   function getCode() {
-    return orgInputArea.value;
+    return $orgInputArea.val();
   }
 
-  function setCode(code, updateHTML) {
-    orgInputArea.value = code;
-    if (updateHTML)
-      setHTMLFromCode(code);
+  function setCode(code, updateView) {
+    $orgInputArea.val(code);
+    if (updateView)
+      updateHTML();
   }
 
   function setHTMLFromCode(code) {
     try {
-      var doc = parser.parse(code);
-      resultArea.innerHTML = Org.HtmlTextConverter.convertDocument(doc);
+      var docHTML = orgParser.parse(code).convert(Org.ConverterHTML).toString();
+      $resultArea.html(docHTML);
     } catch (x) {
-      resultArea.innerHTML = "";
-      var errorNode = document.createElement("pre");
-      errorNode.textContent = x;
-      resultArea.appendChild(errorNode);
+      $resultArea.empty();
+      $resultArea.append($("<pre>").text(x));
       return;
     }
   }
 
-  function onUpdate(ev) {
+  function updateHTML() {
     setHTMLFromCode(getCode());
+    prettyPrint();
   }
 
-  function saveToLocalStorage() {
-    var code = getCode();
-    localStorage["code"] = code;
-  }
+  $orgInputArea.on("input", updateHTML);
 
-  function restoreFromStorage() {
-    setCode(localStorage["code"] || "", true);
-  }
+  $.ajax({
+    url: "./README.org",
+    dataType: "text"
+  }).done(function (data, sattus, $xhr) {
+    setCode(data, true);
+  }).fail(function ($xhr, status, error) {
+    alert("error: " + status);
+  });
 
-  orgInputArea.addEventListener("input", onUpdate, false);
-  setInterval(saveToLocalStorage, 5000);
-
-  restoreFromStorage();
-}, false);
+  updateHTML();
+});
