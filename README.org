@@ -6,13 +6,13 @@ org.js is a parser and converter for org-mode ([[http://orgmode.org/]]) notation
 
 ** Node.js
 
-Install ~org-js~ module via ~npm~,
+Install ~org-js~ module via ~npm~.
 
 #+BEGIN_EXAMPLE
 npm install org
 #+END_EXAMPLE
 
-Then, In your application, load installed module as follows.
+Then, in your application, load installed module as follows.
 
 #+BEGIN_SRC 
 var Org = require("org");
