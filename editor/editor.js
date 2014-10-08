@@ -16,7 +16,9 @@ $(function () {
 
   function setHTMLFromCode(code) {
     try {
-      var docHTML = orgParser.parse(code).convert(Org.ConverterHTML).toString();
+      var docHTML = orgParser.parse(code).convert(Org.ConverterHTML, {
+        translateSymbolArrow: true
+      }).toString();
       $resultArea.html(docHTML);
     } catch (x) {
       $resultArea.empty();
