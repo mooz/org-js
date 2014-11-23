@@ -3,7 +3,11 @@
   "description": "A parser and converter for org-mode notation",
   "homepage": "http://mooz.github.com/org-js",
   "bugs": "http://github.com/mooz/org-s/issues",
-  "keywords": ["org-mode", "emacs", "parser"],
+  "keywords": [
+    "org-mode",
+    "emacs",
+    "parser"
+  ],
   "author": {
     "name": "Masafumi Oyamada",
     "email": "stillpedant@gmail.com",
@@ -14,8 +18,8 @@
       "type": "MIT"
     }
   ],
-  "main":"./lib/org.js",
-  "version": "0.0.5",
+  "main": "./lib/org.js",
+  "version": "0.1.0",
   "directories": {
     "test": "./tests"
   },
