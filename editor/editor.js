@@ -17,7 +17,14 @@ $(function () {
   function setHTMLFromCode(code) {
     try {
       var docHTML = orgParser.parse(code).convert(Org.ConverterHTML, {
-        translateSymbolArrow: true
+        translateSymbolArrow: true,
+        taskStateHeadings: [{
+          heading: "TODO",
+          color: "red"
+        },{
+          heading: "DONE",
+          color: "forestgreen"
+        }]
       }).toString();
       $resultArea.html(docHTML);
     } catch (x) {

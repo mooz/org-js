@@ -49,21 +49,49 @@ pre code {
     padding-left: 4px;
 }
 
-/* TODO status*/
 span.task-status {
-    padding : 0 0.2em;
-    margin-right : 10px;
-    color : white;
+    padding: 0 0.2em;
+    margin-right: 10px;
 }
 
-span.task-status.todo {
+span.task-color-green {
     color: white;
-    background-color: rgb(39, 149, 182);
+    background-color: #00ff00;
 }
 
-span.task-status.done {
+span.task-color-red {
     color: white;
-    background-color: rgb(81, 143, 31);
+    background-color: #ff0000;
+}
+
+span.task-color-deepskyblue {
+    color: white;
+    background-color: #00bfff;
+}
+
+span.task-color-tomato2 {
+    color: white;
+    background-color: #ee5c42;
+}
+
+span.task-color-darkviolet {
+    color: white;
+    background-color: #9400d3;
+}
+
+span.task-color-greenyellow {
+    color: white;
+    background-color: #adff2f;
+}
+
+span.task-color-forestgreen {
+    color: white;
+    background-color: #228b22;
+}
+
+span.task-color-royalblue {
+    color: white;
+    background-color: #4169e1;
 }
 
 /* Section Number */
