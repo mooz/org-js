@@ -23,8 +23,11 @@
   "directories": {
     "test": "./tests"
   },
+  "scripts": {
+    "build": "node build.js"
+  },
   "repository": {
     "type": "git",
-    "url": "git://github.com/mooz/org-js.git"
+    "url": "git://github.com/whacked/org-js.git"
   }
 }

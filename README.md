@@ -23,7 +23,7 @@ Building
 
 Assuming you have all necessary dependencies installed, run:
 
-    ./build.sh
+    =npm run-script build=
 
 this generates `./org.js`, which can be directly included into a webpage for
 browser-based usage.
