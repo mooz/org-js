@@ -23,8 +23,15 @@
   "directories": {
     "test": "./tests"
   },
+  "scripts": {
+    "build": "node build.js",
+    "test": "node tests/test.js"
+  },
   "repository": {
     "type": "git",
-    "url": "git://github.com/mooz/org-js.git"
+    "url": "git://github.com/whacked/org-js.git"
+  },
+  "dependencies": {
+    "tape": "^4.6.3"
   }
 }

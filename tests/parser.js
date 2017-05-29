@@ -1,6 +1,6 @@
 var assert = require("assert");
 
-require.paths.push("../src/org-js/");
+// require.paths.push("../src/org-js/");
 var Parser            = require("parser.js").Parser;
 var Node              = require("node.js").Node;
 var HtmlTextConverter = require("converter-html.js").HtmlTextConverter;
