@@ -1144,10 +1144,10 @@ var Org = (function () {
             this.sectionNumbers.length = thisHeaderLevel; // Collapse
           }
           this.sectionNumbers[thisHeaderLevel - 1]++;
-          sectionNumberText = this.sectionNumbers.join(".");
+          if (this.documentOptions.num)
+            sectionNumberText = this.sectionNumbers.join(".");
           node.sectionNumberText = sectionNumberText; // Can be used in ToC
         }
-
         text = this.convertHeader(node, childText, auxData,
                                   taskStatus, sectionNumberText);
 
@@ -1417,9 +1417,12 @@ var Org = (function () {
       var title = this.orgDocument.title ? this.convertNode(this.orgDocument.title) : this.untitled;
       var titleHTML = this.tag("h" + Math.max(Number(this.headerOffset), 1), title);
       var contentHTML = this.convertNodes(this.orgDocument.nodes, true /* record headers */);
-      var toc = this.computeToc(this.documentOptions["toc"]);
-      var tocHTML = this.tocToHTML(toc);
-
+      var toc = '';
+      var tocHTML = '';
+      if (this.documentOptions.toc) {
+        toc = this.computeToc(this.documentOptions["toc"]);
+        tocHTML = this.tocToHTML(toc);
+      }
       return {
         title: title,
         titleHTML: titleHTML,
