@@ -19,7 +19,7 @@
 | https://github.com/brool/org.js                          | 22 ehead          | 3y  |                 |
 | https://github.com/Dushistov/org-js                      | 1 ahead           | 3y  |                 |
 | https://github.com/JordanRickman/org-mode-js             | 8 ahead           | 3y  |                 |
-| https://github.com/Kyle-Verhoog/notes                    | 1 ahead           | 4y  |                 |
+| https://github.com/Kyle-Verhoog/notes                    | 1 ahead           | 4y  | renamed only    |
 | https://github.com/nak2k/org-js                          | 1 ahead           | 4y  |                 |
 |----------------------------------------------------------+-------------------+-----+-----------------|
 | https://github.com/7696122/org-js                        | same              |     |                 |
@@ -71,3 +71,51 @@
 | https://github.com/creamidea/org-js                      | behind            |     |                 |
 | https://github.com/kwsk416/org-js                        | behind            |     |                 |
 | https://github.com/priezz/org-js                         | behind            |     |                 |
+
+* Commits
+
+  Here are the commits belong to the forks.
+  Renaming commits are discarded to keep only interesting things.
+
+** Emacs-Phoenix https://github.com/Emacs-Phoenix/org-js
+
+   [feature] add class 'outline' to toc items
+   https://github.com/Emacs-Phoenix/org-js/commit/f47d68b7f83ba17438a68b63d01dbcb2890eb6eb
+
+   [FIX BUG] prevent dead loop when diretive un close
+   https://github.com/Emacs-Phoenix/org-js/commit/0c1ff42e855ab2cbef7e1ee54689dd79001b1568
+
+   parse link to image by prefix
+   https://github.com/Emacs-Phoenix/org-js/commit/c613969091c2019e822ba82c70139912b505f454
+
+** mickael-kerjean https://github.com/mickael-kerjean/org-js
+
+   feature (headline property): Add support for headline inline
+   https://github.com/mickael-kerjean/org-js/commit/8b146edeb8bc82a501801ce7b4d999e26db6b1f9
+
+   fix (header keyword): support for more than just the TODO and DONE
+   https://github.com/mickael-kerjean/org-js/commit/eb7573035441624792f28be006c3597688a4f926a
+
+** whacked https://github.com/whacked/org-js
+
+   /A Lot of things !/
+
+** brool https://github.com/brool/org.js
+
+   /A Lot of things !/
+
+** Dushistov https://github.com/Dushistov/org-js
+
+   /Looks very specific, replace archive: links with static url/
+
+   add archive: url type handling
+   https://github.com/Dushistov/org-js/commit/bd3e079553ba898115f7038aaa6d6de0b43b09cf
+
+** JordanRickman https://github.com/JordanRickman/org-mode-js
+
+   /A lot of things !/
+
+** nak2k https://github.com/nak2k/org-js
+
+   No output section number texts
+   https://github.com/nak2k/org-js/commit/ca732cee4ea85b788373212a69448f682729ea8e
