@@ -104,18 +104,22 @@
 
    /A Lot of things !/
 
-** Dushistov https://github.com/Dushistov/org-js
+** DONE Dushistov https://github.com/Dushistov/org-js
 
-   /Looks very specific, replace archive: links with static url/
+   /Looks very specific, replace archive: links with static url, won't merge/
 
    add archive: url type handling
    https://github.com/Dushistov/org-js/commit/bd3e079553ba898115f7038aaa6d6de0b43b09cf
 
-** JordanRickman https://github.com/JordanRickman/org-mode-js
+** DONE JordanRickman https://github.com/JordanRickman/org-mode-js
 
-   /A lot of things !/
+   Renamed, GIT ignore, unfinined intent to use a new model.
+   Patch about how the parse the title, but looks that it breaks table stuff.
 
-** nak2k https://github.com/nak2k/org-js
+** DONE nak2k https://github.com/nak2k/org-js
 
    No output section number texts
+   https://github.com/nak2k/org-js/commit/ca732cee4ea85b788373212a69448f682729ea8e
+
+   Also handled in my commit
    https://github.com/nak2k/org-js/commit/ca732cee4ea85b788373212a69448f682729ea8e
