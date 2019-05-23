@@ -1,0 +1,125 @@
+* Pull requests on original
+
+  - [X] #30 (by me: done in my branch)
+  - [ ] #25
+  - [ ] #24
+  - [ ] #19
+  - [ ] #9 by fpinard
+
+* Forks
+
+| Fork                                                     | State             | Age | Comment         |
+|----------------------------------------------------------+-------------------+-----+-----------------|
+| https://github.com/mooz/org-js                           | original          |     |                 |
+| https://github.com/coffee-cup/org-js                     | ehead             | 8m  | same as jeansch |
+| https://github.com/jeansch/org-js                        | 5 ahead           | 8m  | my own fork     |
+| https://github.com/Emacs-Phoenix/org-js                  | 4 ahead           | 9m  |                 |
+| https://github.com/mickael-kerjean/org-js                | 2 ahead           | 1y  |                 |
+| https://github.com/whacked/org-js                        | 7 ahead           | 2y  |                 |
+| https://github.com/brool/org.js                          | 22 ehead          | 3y  |                 |
+| https://github.com/Dushistov/org-js                      | 1 ahead           | 3y  |                 |
+| https://github.com/JordanRickman/org-mode-js             | 8 ahead           | 3y  |                 |
+| https://github.com/Kyle-Verhoog/notes                    | 1 ahead           | 4y  | renamed only    |
+| https://github.com/nak2k/org-js                          | 1 ahead           | 4y  |                 |
+|----------------------------------------------------------+-------------------+-----+-----------------|
+| https://github.com/7696122/org-js                        | same              |     |                 |
+| https://github.com/aixiak/org-js                         | same              |     |                 |
+| https://github.com/albin-zhu/org-js                      | same              |     |                 |
+| https://github.com/anuragpeshne/org-js                   | same              |     |                 |
+| https://github.com/azizyemloul/org-js                    | same              |     |                 |
+| https://github.com/base698/org-js                        | same              |     |                 |
+| https://github.com/blrbiran/org-js                       | same              |     |                 |
+| https://github.com/cool-repos-list-for-melioratus/org-js | same              |     |                 |
+| https://github.com/d53dave/org-js                        | same              |     |                 |
+| https://github.com/davidnuon/org-js                      | same              |     |                 |
+| https://github.com/dsdstudio/org-js                      | same              |     |                 |
+| https://github.com/ebpa/org-js                           | same              |     |                 |
+| https://github.com/gaoyaoxin/org-js                      | same              |     |                 |
+| https://github.com/h4ck3rm1k3/org-js                     | same              |     |                 |
+| https://github.com/HairyRabbit/org-js                    | same              |     |                 |
+| https://github.com/hytd/org-js                           | same              |     |                 |
+| https://github.com/iMcG33k/org-js                        | same              |     |                 |
+| https://github.com/Jasonic/org-js                        | same              |     |                 |
+| https://github.com/leinadlime/org-js                     | same              |     |                 |
+| https://github.com/leonhe/org-js                         | same              |     |                 |
+| https://github.com/lsmag/org-js                          | same              |     |                 |
+| https://github.com/lucidbard/org-js                      | same              |     |                 |
+| https://github.com/marcosluna/org-js                     | same              |     |                 |
+| https://github.com/melioratus/org-js                     | same              |     |                 |
+| https://github.com/nio3000/org-js                        | same              |     |                 |
+| https://github.com/nmuth/org-js                          | same              |     |                 |
+| https://github.com/nomadics/org-js                       | same              |     |                 |
+| https://github.com/notetiene/md-js                       | same              |     |                 |
+| https://github.com/nunb/org-js                           | same              |     |                 |
+| https://github.com/origamidance/org-js                   | same              |     |                 |
+| https://github.com/pasoevi/org-js                        | same              |     |                 |
+| https://github.com/pawelbx/org-js                        | same              |     |                 |
+| https://github.com/PlumpMath/org-js                      | same              |     |                 |
+| https://github.com/qyqx/org-js                           | same              |     |                 |
+| https://github.com/rong002/org-js                        | same              |     |                 |
+| https://github.com/rowhit/org-js                         | same              |     |                 |
+| https://github.com/solkaz/org-ts                         | same              |     |                 |
+| https://github.com/tfragner/org-js                       | same              |     |                 |
+| https://github.com/tokareff/org-js                       | same              |     |                 |
+| https://github.com/vuquangtam/org-js                     | same              |     |                 |
+| https://github.com/whitemuu/org-js                       | same              |     |                 |
+| https://github.com/zhuatw/org-js                         | same              |     |                 |
+|----------------------------------------------------------+-------------------+-----+-----------------|
+| https://github.com/pinard/org-js                         | 1 ehead 35 behind |     |                 |
+|----------------------------------------------------------+-------------------+-----+-----------------|
+| https://github.com/anshulverma/org-js                    | behind            |     |                 |
+| https://github.com/creamidea/org-js                      | behind            |     |                 |
+| https://github.com/kwsk416/org-js                        | behind            |     |                 |
+| https://github.com/priezz/org-js                         | behind            |     |                 |
+
+* Commits
+
+  Here are the commits belong to the forks.
+  Renaming commits are discarded to keep only interesting things.
+
+** Emacs-Phoenix https://github.com/Emacs-Phoenix/org-js
+
+   [feature] add class 'outline' to toc items
+   https://github.com/Emacs-Phoenix/org-js/commit/f47d68b7f83ba17438a68b63d01dbcb2890eb6eb
+
+   [FIX BUG] prevent dead loop when diretive un close
+   https://github.com/Emacs-Phoenix/org-js/commit/0c1ff42e855ab2cbef7e1ee54689dd79001b1568
+
+   parse link to image by prefix
+   https://github.com/Emacs-Phoenix/org-js/commit/c613969091c2019e822ba82c70139912b505f454
+
+** mickael-kerjean https://github.com/mickael-kerjean/org-js
+
+   feature (headline property): Add support for headline inline
+   https://github.com/mickael-kerjean/org-js/commit/8b146edeb8bc82a501801ce7b4d999e26db6b1f9
+
+   fix (header keyword): support for more than just the TODO and DONE
+   https://github.com/mickael-kerjean/org-js/commit/eb7573035441624792f28be006c3597688a4f926a
+
+** whacked https://github.com/whacked/org-js
+
+   /A Lot of things !/
+
+** brool https://github.com/brool/org.js
+
+   /A Lot of things !/
+
+** DONE Dushistov https://github.com/Dushistov/org-js
+
+   /Looks very specific, replace archive: links with static url, won't merge/
+
+   add archive: url type handling
+   https://github.com/Dushistov/org-js/commit/bd3e079553ba898115f7038aaa6d6de0b43b09cf
+
+** DONE JordanRickman https://github.com/JordanRickman/org-mode-js
+
+   Renamed, GIT ignore, unfinined intent to use a new model.
+   Patch about how the parse the title, but looks that it breaks table stuff.
+
+** DONE nak2k https://github.com/nak2k/org-js
+
+   No output section number texts
+   https://github.com/nak2k/org-js/commit/ca732cee4ea85b788373212a69448f682729ea8e
+
+   Also handled in my commit
+   https://github.com/nak2k/org-js/commit/ca732cee4ea85b788373212a69448f682729ea8e
